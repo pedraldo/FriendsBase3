@@ -7,6 +7,7 @@ import { Facebook } from '@ionic-native/facebook';
 import firebase from 'firebase';
 
 import { DataProvider } from './data';
+import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class AuthenticationProvider {
@@ -49,10 +50,19 @@ export class AuthenticationProvider {
       });
     }
 
+    public getUserByEmail(email: string): Observable<IUser> {
+        return Observable.create(observer => {
+            this.DataProvider.list('users').subscribe(users => {
+                observer.next(users.find(user => user.email === email));
+            })
+        })
+    } 
+
     public registerUser(email: string, password: string): Observable<IBasicCredentials> {
         return Observable.create(observer => {
             this.AngularFireAuth.auth.createUserWithEmailAndPassword(email, password).then(authenticationData => {
                 this.AngularFireDatabase.list('users').update(authenticationData.uid, {
+                    id: authenticationData.uid,
                     name: authenticationData.auth.email,
                     email: authenticationData.auth.email,
                     emailVerified: false,
@@ -100,6 +110,7 @@ export class AuthenticationProvider {
                         console.log('firebaseData');
                         console.log(firebaseData);
                         this.AngularFireDatabase.list('users').update(firebaseData.user.uid, {
+                            id: firebaseData.user.uid,
                             name: firebaseData.user.displayName,
                             email: firebaseData.user.email,
                             provider: 'facebook',
@@ -117,6 +128,7 @@ export class AuthenticationProvider {
                     console.log('facebookData');
                     console.log(facebookData);
                     this.AngularFireDatabase.list('users').update(facebookData.user.uid, {
+                        id: facebookData.user.uid,
                         name: facebookData.user.displayName,
                         email: facebookData.user.email,
                         provider: 'facebook',
