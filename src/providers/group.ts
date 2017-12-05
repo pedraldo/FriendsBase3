@@ -33,7 +33,7 @@ export class GroupProvider {
           let obsvArray: Observable<IPersistedUser>[] = [];
           if (groupUsersId) {
             groupUsersId.forEach(userId => {
-              obsvArray.push(this.AuthenticationProvider.getUserData(userId.$key));
+              obsvArray.push(this.AuthenticationProvider.getUserData(userId));
             });
             Observable.forkJoin(obsvArray).subscribe(groupUsers => {
               observer.next(groupUsers);
@@ -53,13 +53,13 @@ export class GroupProvider {
       return Observable.create(observer => {
         this.DataProvider.list(`users/${userId}/groups`).subscribe(userGroupsId => {
           if (userGroupsId) {
-            let userGroups: IGroup[] = [];
+            let obsvArray: Observable<IPersistedGroup>[] = [];
             userGroupsId.forEach(groupId => {
-              this.getGroupData(groupId.$key).toPromise().then(groupData => {
-                userGroups.push(groupData);
-              });
+              obsvArray.push(this.getGroupData(groupId));
             });
-            observer.next(userGroups);
+            Observable.forkJoin(obsvArray).subscribe(groupUsers => {
+              observer.next(groupUsers);
+            });
           } else {
             observer.error();
           }
@@ -69,12 +69,15 @@ export class GroupProvider {
 
     public createGroup(group: IGroup, userId: string): void {
       if (group.name) {
-        group.users[userId] = true;
+        group.users[userId] = userId;
         group.superAdmin = userId;
         this.DataProvider.push('groups', group).subscribe(groupId => {
           let groupRef = {};
-          groupRef[groupId] = true;
+          let idRef = {};
+          groupRef[groupId] = groupId;
+          idRef['id'] = groupId;
           this.DataProvider.update(`users/${userId}/groups`, groupRef);
+          this.DataProvider.update(`groups/${groupId}`, idRef);
         });
       }
     }
@@ -113,7 +116,7 @@ export class GroupProvider {
 
     public createNewGroupJoinRequest(groupId: string, userId: string): Promise<void> {
       let userRef = {};
-      userRef[userId] = true;
+      userRef[userId] = userId;
       return this.DataProvider.update(`groups/${groupId}/joinRequests`, userRef);
     }
 
@@ -123,14 +126,18 @@ export class GroupProvider {
 
     public getGroupJoinRequestsUsers(groupId: string): Observable<any> {
       return Observable.create(observer => {
-        this.DataProvider.list(`groups/${groupId}/joinRequests`).subscribe(joinRequests => {
-          let obsvArray: Observable<any>[] = [];
-          _.forEach(joinRequests, joinRequest => {
-            obsvArray.push(this.AuthenticationProvider.getUserData(joinRequest.$key));
-          });
-          Observable.forkJoin(obsvArray).subscribe(joinRequestUsers => {
-            observer.next(joinRequestUsers);
-          });
+        this.DataProvider.list(`groups/${groupId}/joinRequests`).subscribe(joinRequestsUserId => {
+          if (joinRequestsUserId.length) {
+            let obsvArray: Observable<any>[] = [];
+            _.forEach(joinRequestsUserId, joinRequestUserId => {
+              obsvArray.push(this.AuthenticationProvider.getUserData(joinRequestUserId));
+            });
+            Observable.forkJoin(obsvArray).subscribe(joinRequestUsers => {
+              observer.next(joinRequestUsers);
+            });
+          } else {
+            observer.next([]);
+          }
         })
       });
     }
