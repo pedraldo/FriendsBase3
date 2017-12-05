@@ -4,11 +4,12 @@ interface IPersistedResource {
 }
 
 interface IRelationObject {
-    [key: string]: boolean;
+    [key: string]: string;
 }
 
 // Groups
 interface IGroup {
+    id: string;
     name: string;
     description: string;
     users: IRelationObject;
@@ -22,6 +23,7 @@ interface IPersistedGroup extends IGroup, IPersistedResource { }
 
 // User
 interface IUser {
+    id: string;
     email: string,
     groups: IRelationObject,
     name: string,
