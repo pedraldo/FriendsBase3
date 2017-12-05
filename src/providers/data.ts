@@ -13,8 +13,7 @@ export class DataProvider {
 	public push(path: string, data: any): Observable<any> {
 		return Observable.create(observer => {
 			this.AngularFireDatabase.list(path).push(data).then((firebaseNewData) => {
-                debugger;
-				observer.next(firebaseNewData.path.o[firebaseNewData.path.o.length - 1]);
+				observer.next(firebaseNewData.path.pieces_[firebaseNewData.path.pieces_.length - 1]);
 			}, error => {
 				observer.next(error);
 			});
