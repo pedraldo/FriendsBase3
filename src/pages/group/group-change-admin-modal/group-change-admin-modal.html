@@ -1,0 +1,36 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>
+      Désigner l'admin
+    </ion-title>
+    <ion-buttons start>
+      <button ion-button (click)="dismiss()">
+        <span ion-text color="primary" showWhen="ios">Annuler</span>
+        <ion-icon name="md-close" showWhen="android,windows"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content radio-group>
+    <ion-list-header>
+      Membres
+    </ion-list-header>
+  <form (ngSubmit)="changeGroupSuperAdmin(groupUser)" #changeAdminGroupForm="ngForm">
+    <ion-list radio-group [(ngModel)]="idMemberChosen" name="member">
+      <ion-item *ngFor="let groupUser of groupUsers">
+        <ion-avatar item-left>
+            <img src="{{groupUser.image}}">
+        </ion-avatar>
+        <ion-label>
+          <h2>{{groupUser.name}}</h2>
+          <p>{{groupUser.email}}</p>
+        </ion-label>
+        <ion-radio value="{{groupUser.id}}"></ion-radio>
+
+      </ion-item>
+    </ion-list>
+
+    <button ion-button block [disabled]="!idMemberChosen">Valider</button>
+  </form>
+</ion-content>
