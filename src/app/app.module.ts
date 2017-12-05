@@ -17,6 +17,12 @@ import { AuthHomePage } from './../pages/authentication/auth-home/auth-home';
 import { SignUpPage } from './../pages/authentication/sign-up/sign-up';
 import { LoginEmailPage } from './../pages/authentication/login-email/login-email';
 import { ForgotPasswordPage } from '../pages/authentication/forgot-password/forgot-password';
+import { GroupListPage } from './../pages/group/group-list/group-list';
+import { GroupCreationModalPage } from './../pages/group/group-creation-modal/group-creation-modal';
+import { GroupDetailPage } from './../pages/group/group-detail/group-detail';
+import { GroupSearchPage } from './../pages/group/group-search/group-search';
+import { GroupChangeAdminModalPage } from './../pages/group/group-change-admin-modal/group-change-admin-modal';
+import { GroupInvitationPage } from '../pages/group/group-invitation/group-invitation';
 
 // Providers
 import { AuthenticationProvider } from '../providers/authentication';
@@ -44,7 +50,13 @@ export const firebaseConfig = {
     AuthHomePage,
     SignUpPage,
     LoginEmailPage,
-    ForgotPasswordPage
+    ForgotPasswordPage,
+    GroupListPage,
+    GroupCreationModalPage,
+    GroupDetailPage,
+    GroupSearchPage,
+    GroupChangeAdminModalPage,
+    GroupInvitationPage
   ],
   imports: [
     BrowserModule,
@@ -62,7 +74,13 @@ export const firebaseConfig = {
     AuthHomePage,
     SignUpPage,
     LoginEmailPage,
-    ForgotPasswordPage
+    ForgotPasswordPage,
+    GroupListPage,
+    GroupCreationModalPage,
+    GroupDetailPage,
+    GroupSearchPage,
+    GroupChangeAdminModalPage,
+    GroupInvitationPage
   ],
   providers: [
     StatusBar,

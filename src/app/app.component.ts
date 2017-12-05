@@ -1,3 +1,4 @@
+import { GroupListPage } from './../pages/group/group-list/group-list';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -64,9 +65,9 @@ export class MyApp {
     this.nav.setRoot(page.component);
   }
 
-  // public openGroupsPage(): void {
-  //   this.nav.setRoot(GroupListPage);
-  // }
+  public openGroupsPage(): void {
+    this.nav.setRoot(GroupListPage);
+  }
 
   // public openListsPage(): void {
   //   this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(ListListPage, [currentUserId, true]));

@@ -10,22 +10,22 @@
       <button menuClose ion-item *ngFor="let p of pages" (click)="openPage(p)">
         {{p.title}}
       </button>
+      <button menuClose ion-item detail-none (click)="openGroupsPage()">
+        <ion-icon name="people" item-left></ion-icon>
+        Groupes
+      </button>
+      <!-- <button menuClose ion-item detail-none (click)="openProfilePage()">
+        <ion-icon name="person" item-left></ion-icon>
+        Profil
+      </button> -->
+      <!-- <button menuClose ion-item detail-none (click)="openRelationshipsPage()">
+        <ion-icon name="star" item-left></ion-icon>
+        Relations
+      </button> -->
       <button menuClose ion-item detail-none (click)="logout()">
         <ion-icon name="log-out" item-left></ion-icon>
         Déconnexion
       </button>
-      <!-- <button menuClose ion-item detail-none (click)="openGroupsPage()">
-        <ion-icon name="people" item-left></ion-icon>
-        Groupes
-      </button>
-      <button menuClose ion-item detail-none (click)="openProfilePage()">
-        <ion-icon name="person" item-left></ion-icon>
-        Profil
-      </button>
-      <button menuClose ion-item detail-none (click)="openRelationshipsPage()">
-        <ion-icon name="star" item-left></ion-icon>
-        Relations
-      </button> -->
     </ion-list>
   </ion-content>
 
