@@ -90,8 +90,8 @@ export class GroupProvider {
       let groupRef = {};
       let userRef = {};
 
-      groupRef[groupId] = true;
-      userRef[userId] = true;
+      groupRef[groupId] = groupId;
+      userRef[userId] = userId;
 
       return Promise.all([
         this.DataProvider.update(`groups/${groupId}/users`, userRef),

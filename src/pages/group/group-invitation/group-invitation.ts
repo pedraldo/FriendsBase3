@@ -30,22 +30,22 @@ export class GroupInvitationPage {
   }
 
   public getUserByEmail(): void {
-    debugger;
+    this.isMemberSearched = true;
+    this.isSearchInProgress = true;
     this.AuthenticationProvider.getUserByEmail(this.emailSearched).subscribe(userFound => {
-      debugger;
       this.memberFound = userFound;
       this.isMemberFound = !!this.memberFound;
 
       if (this.isMemberFound) {
-        this.isMemberAdded = !!this.group.users[this.memberFound.id];
+        this.isMemberAdded = userFound.groups !== undefined && !!userFound.groups[this.group.id];
       }
       this.isSearchInProgress = false;
     });
   }
 
-  public addUserToCurrentGroup(user: IUser) {
+  public addUserToCurrentGroup(userId: string) {
     this.isAddingInProgress = true;
-    this.GroupProvider.addUserToGroup(user.id, this.group.id).then(() => {
+    this.GroupProvider.addUserToGroup(userId, this.group.id).then(() => {
       this.isMemberAdded = true;
       this.isAddingInProgress = false;
     });

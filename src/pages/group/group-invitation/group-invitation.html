@@ -40,7 +40,7 @@
         <ion-spinner *ngIf="isSearchInProgress" name="crescent"></ion-spinner>
         <ion-item *ngIf="isMemberSearched && isMemberFound">
           <ion-label itel-left>{{ memberFound.name }}</ion-label>
-          <button *ngIf="!isMemberAdded" ion-button color="primary" outline item-right (click)="addUserToCurrentGroup(memberFound)">
+          <button *ngIf="!isMemberAdded" ion-button color="primary" outline item-right (click)="addUserToCurrentGroup(memberFound.id)">
             <span *ngIf="!isAddingInProgress">Ajouter</span>
             <span>
               <ion-spinner *ngIf="isAddingInProgress" name="crescent"></ion-spinner>
