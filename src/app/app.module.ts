@@ -1,3 +1,4 @@
+import { ProfilePage } from './../pages/profile/profile';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
@@ -56,7 +57,8 @@ export const firebaseConfig = {
     GroupDetailPage,
     GroupSearchPage,
     GroupChangeAdminModalPage,
-    GroupInvitationPage
+    GroupInvitationPage,
+    ProfilePage
   ],
   imports: [
     BrowserModule,
@@ -80,7 +82,8 @@ export const firebaseConfig = {
     GroupDetailPage,
     GroupSearchPage,
     GroupChangeAdminModalPage,
-    GroupInvitationPage
+    GroupInvitationPage,
+    ProfilePage
   ],
   providers: [
     StatusBar,

@@ -28,12 +28,14 @@
     </ion-card-header>
     <ion-card-content>
       <ion-list *ngIf="areGroupUsersLoaded && isCurrentUserMemberOfGroup">
-        <ion-item *ngFor="let groupUser of groupUsers" (click)="openProfilePage(groupUser.id)">
-          <ion-avatar item-left>
+        <ion-item *ngFor="let groupUser of groupUsers">
+          <ion-avatar item-left (click)="openProfilePage(groupUser.id)">
             <img src="{{groupUser.image}}">
           </ion-avatar>
-          <h2>{{groupUser.name}}</h2>
-          <p>{{groupUser.email}}</p>
+          <div (click)="openProfilePage(groupUser.id)">
+            <h2>{{groupUser.name}}</h2>
+            <p>{{groupUser.email}}</p>
+          </div>
           <ion-icon item-right name="star" *ngIf="groupUser.id === group.superAdmin"></ion-icon>
           <button item-right ion-button outline color="danger" *ngIf="currentUserId !== groupUser.id && isCurrentUserSuperAdmin"
             (click)="removeMemberFromCurrentGroup(groupUser, group)">

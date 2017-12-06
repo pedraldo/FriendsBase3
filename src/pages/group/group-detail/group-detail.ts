@@ -1,3 +1,4 @@
+import { ProfilePage } from './../../profile/profile';
 import { GroupInvitationPage } from './../group-invitation/group-invitation';
 import { GroupChangeAdminModalPage } from './../group-change-admin-modal/group-change-admin-modal';
 import { AuthenticationProvider } from './../../../providers/authentication';
@@ -63,11 +64,13 @@ export class GroupDetailPage {
     this.NavController.push(GroupInvitationPage, group);
   }
 
-  // public openProfilePage(userId: string): void {
-  //   this.NavController.push(ProfilePage, [userId, userId === this.currentUserId]);
-  // }
+  public openProfilePage(userId: string): void {
+    debugger;
+    this.NavController.push(ProfilePage, [userId, userId === this.currentUserId]);
+  }
 
   public removeMemberFromCurrentGroup(user: IUser, group: IGroup) {
+    debugger;
     this.AlertController.create({
       title: 'Supprimer un membre du groupe ?',
       message: `Etes vous sûr de vouloir retirer ${user.name} du groupe ${group.name} ?`,
