@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-navbar primary>
+    <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+    <ion-title>
+      {{group.name}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-12><h4>Entrez l'email de la personne à inviter</h4></ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col col-8>
+            <ion-list>
+              <ion-item>
+                <ion-input type="email" value="" placeholder="Email" [(ngModel)]="emailSearched"></ion-input>
+              </ion-item>
+            </ion-list>
+        </ion-col>
+        <ion-col col-4>
+            <button ion-button color="primary" (click)="getUserByEmail()">Valider</button>
+        </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-card *ngIf="isMemberSearched">
+    <ion-card-header>
+      <ion-list>
+        <ion-item>
+          <ion-label>Résultat de la recherche</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-spinner *ngIf="isSearchInProgress" name="crescent"></ion-spinner>
+        <ion-item *ngIf="isMemberSearched && isMemberFound">
+          <ion-label itel-left>{{ memberFound.name }}</ion-label>
+          <button *ngIf="!isMemberAdded" ion-button color="primary" outline item-right (click)="addUserToCurrentGroup(memberFound.id)">
+            <span *ngIf="!isAddingInProgress">Ajouter</span>
+            <span>
+              <ion-spinner *ngIf="isAddingInProgress" name="crescent"></ion-spinner>
+            </span>
+          </button>
+          <button *ngIf="isMemberAdded" ion-button color="secondary" outline item-right >Ajouté</button>
+        </ion-item>
+        <ion-item *ngIf="isMemberSearched && !isMemberFound && !isSearchInProgress">
+          <ion-label>Aucun membre trouvé</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

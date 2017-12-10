@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-navbar primary>
+    <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+    <ion-title>
+      {{group.name}}
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="!isCurrentUserMemberOfGroup">
+    <ion-card-header>
+      <ion-label>A propos du groupe {{ group.name }}</ion-label>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ group.description }}</p>
+    </ion-card-content>
+  </ion-card>
+  <ion-card>
+    <ion-card-header>
+      <ion-item>
+        <ion-label item-left *ngIf="isCurrentUserMemberOfGroup">Membres</ion-label>
+        <ion-label item-left *ngIf="!isCurrentUserMemberOfGroup">Administrateur</ion-label>
+        <ion-icon item-right name="add" *ngIf="isCurrentUserMemberOfGroup && isCurrentUserSuperAdmin" (click)="openGroupInvitationPage(group)"></ion-icon>
+      </ion-item>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngIf="areGroupUsersLoaded && isCurrentUserMemberOfGroup">
+        <ion-item *ngFor="let groupUser of groupUsers">
+          <ion-avatar item-left (click)="openProfilePage(groupUser.id)">
+            <img src="{{groupUser.image}}">
+          </ion-avatar>
+          <div (click)="openProfilePage(groupUser.id)">
+            <h2>{{groupUser.name}}</h2>
+            <p>{{groupUser.email}}</p>
+          </div>
+          <ion-icon item-right name="star" *ngIf="groupUser.id === group.superAdmin"></ion-icon>
+          <button item-right ion-button outline color="danger" *ngIf="currentUserId !== groupUser.id && isCurrentUserSuperAdmin"
+            (click)="removeMemberFromCurrentGroup(groupUser, group)">
+            <ion-icon name="close"></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+      <ion-list *ngIf="areGroupUsersLoaded && !isCurrentUserMemberOfGroup">
+        <ion-item>
+          <ion-avatar item-left>
+            <img src="{{superAdminUser.image}}">
+          </ion-avatar>
+          <h2>{{superAdminUser.name}}</h2>
+          <p>{{superAdminUser.email}}</p>
+          <ion-icon item-right name="star"></ion-icon>
+        </ion-item>
+      </ion-list>
+      <ion-spinner name="crescent" *ngIf="!areGroupUsersLoaded"></ion-spinner>
+    </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="isCurrentUserSuperAdmin && !!joinRequestUsers.length">
+    <ion-card-header>Demandes d'ajout</ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let joinRequestUser of joinRequestUsers">
+          <ion-avatar item-left>
+            <img src="{{joinRequestUser.image}}">
+          </ion-avatar>
+          <h2>{{joinRequestUser.name}}</h2>
+          <p>{{joinRequestUser.email}}</p>
+          <div item-right>
+              <ion-icon item-right name="checkmark" (click)="acceptJoinRequest(joinRequestUser.id, joinRequestUser.name)"></ion-icon>
+              <ion-icon item-right name="close" (click)="refuseJoinRequest(joinRequestUser.id, joinRequestUser.name)"></ion-icon>
+          </div>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+  <button *ngIf="isCurrentUserSuperAdmin" full ion-button color="warning" (click)="changeGroupSuperAdmin()">Désigner un nouvel admin</button>
+  <button *ngIf="!isCurrentUserMemberOfGroup" full ion-button color="warning" (click)="sendGroupJoinRequest()" [disabled]="hasCurrentUserAlreadyMadeJoinRequest">Intégrer le groupe</button>
+  <p padding *ngIf="hasCurrentUserAlreadyMadeJoinRequest && !isCurrentUserMemberOfGroup">Vous serez intégré au groupe dès l'accord de son administrateur</p>
+  <button full ion-button color="danger" (click)="leaveGroup()" *ngIf="isCurrentUserMemberOfGroup">Quitter le groupe</button>
+</ion-content>

@@ -1,0 +1,33 @@
+<ion-header>
+  <ion-navbar primary>
+      <button ion-button menuToggle icon-only>
+          <ion-icon name="menu"></ion-icon>
+      </button>
+      <ion-title *ngIf="!!user">
+          {{ user.name }}
+      </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-card *ngIf="!!user">
+      <img src="{{ photoUrl }}"/>
+      <ion-card-content text-center>
+          <h1>{{ user.name }}</h1>
+          <h2>{{ user.email }}</h2>
+          <button ion-button round color="default" *ngIf="!isCurrentUserProfile && !isCurrentUserRelationship" (click)="addUserToRelationships(user.id)">Suivre</button>
+          <button ion-button round outline color="default" *ngIf="!isCurrentUserProfile && isCurrentUserRelationship" (click)="removeUserFromRelationships(user.id)">Suivi</button>
+      </ion-card-content>
+  </ion-card>
+  <ion-card *ngIf="!!userGroups.length">
+      <ion-card-content>
+          <ion-card-title>Groupes</ion-card-title>
+          <ion-list>
+              <ion-item *ngFor="let userGroup of userGroups" (click)="openGroupPage(userGroup)">
+                  <ion-label item-left>{{ userGroup.name }}</ion-label>
+                  <ion-icon name="arrow-dropright" item-right></ion-icon>
+              </ion-item>
+          </ion-list>
+      </ion-card-content>
+  </ion-card>
+</ion-content>
