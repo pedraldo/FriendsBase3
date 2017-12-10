@@ -29,8 +29,9 @@ interface IUser {
     name: string,
     provider: string,
     relationships: IRelationObject,
-    image?: string,
-    emailVerified?: boolean
+    image: string,
+    emailVerified: boolean,
+    facebookId?: string
 }
 
 interface IPersistedUser extends IUser, IPersistedResource { }

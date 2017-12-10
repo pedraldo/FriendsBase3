@@ -1,7 +1,7 @@
 import { Storage } from '@ionic/storage';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
-import { NavController, NavParams, AlertController, ViewController, Platform } from 'ionic-angular';
+import { NavParams, AlertController, ViewController, Platform } from 'ionic-angular';
 
 @Component({
   selector: 'page-group-change-admin-modal',

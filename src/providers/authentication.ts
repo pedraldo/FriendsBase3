@@ -1,3 +1,4 @@
+import { Storage } from '@ionic/storage';
 import { AngularFireDatabase } from 'angularfire2/database';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Injectable } from '@angular/core';
@@ -7,7 +8,6 @@ import { Facebook } from '@ionic-native/facebook';
 import firebase from 'firebase';
 
 import { DataProvider } from './data';
-import { Subscription } from 'rxjs/Subscription';
 
 @Injectable()
 export class AuthenticationProvider {
@@ -17,7 +17,8 @@ export class AuthenticationProvider {
         private AngularFireAuth: AngularFireAuth,
         private DataProvider: DataProvider,
         private Platform: Platform,
-        private Facebook: Facebook
+        private Facebook: Facebook,
+        private Storage: Storage
     ) {
 
     }
@@ -107,16 +108,16 @@ export class AuthenticationProvider {
                 this.Facebook.login(['public_profile', 'email']).then(facebookData => {
                     let provider: firebase.auth.AuthCredential = firebase.auth.FacebookAuthProvider.credential(facebookData.authResponse.accessToken);
                     firebase.auth().signInWithCredential(provider).then((firebaseData) => {
-                        console.log('firebaseData');
-                        console.log(firebaseData);
                         this.AngularFireDatabase.list('users').update(firebaseData.user.uid, {
                             id: firebaseData.user.uid,
+                            facebookId: firebaseData.user.providerData[0].uid,
                             name: firebaseData.user.displayName,
                             email: firebaseData.user.email,
                             provider: 'facebook',
                             image: firebaseData.additionalUserInfo.profile.picture.data.url,
                             emailVerified: true
                         });
+                        this.Storage.set('currentUserFacebookId', firebaseData.user.providerData[0].uid);
                         observer.next(firebaseData.user);
                     });
                 }).catch(error => {
@@ -125,10 +126,10 @@ export class AuthenticationProvider {
             } else {
                 this.AngularFireAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider())
                 .then(facebookData => {
-                    console.log('facebookData');
                     console.log(facebookData);
                     this.AngularFireDatabase.list('users').update(facebookData.user.uid, {
                         id: facebookData.user.uid,
+                        facebookId: facebookData.user.providerData[0].uid,
                         name: facebookData.user.displayName,
                         email: facebookData.user.email,
                         provider: 'facebook',
@@ -143,6 +144,13 @@ export class AuthenticationProvider {
         });
     }
 
+    public getFacebookUserPhotoURL(facebookId: string, width: number | null, height: number | null): string {
+        const widthURLParam = width === null ? '' : `?width=${width}`;
+        const heightURLParam = height === null ? '' : `?height=${height}`;
+
+        return `https://graph.facebook.com/${facebookId}/picture${widthURLParam}${heightURLParam}`;
+    }
+
     public sendPasswordResetEmail(email: string): Observable<string> {
         return Observable.create(observer => {
             firebase.auth().sendPasswordResetEmail(email).then(() => {
@@ -154,6 +162,7 @@ export class AuthenticationProvider {
     }
 
     public logout(): Promise<void> {
+        this.Storage.clear();
         return this.AngularFireAuth.auth.signOut();
     }
 }

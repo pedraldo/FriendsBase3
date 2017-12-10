@@ -1,3 +1,5 @@
+import { ProfilePage } from './../pages/profile/profile';
+import { Storage } from '@ionic/storage';
 import { GroupListPage } from './../pages/group/group-list/group-list';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
@@ -28,7 +30,8 @@ export class MyApp {
     public statusBar: StatusBar, 
     public splashScreen: SplashScreen,
     protected DataProvider: DataProvider,
-    protected AuthenticationProvider: AuthenticationProvider
+    protected AuthenticationProvider: AuthenticationProvider,
+    protected Storage: Storage
   ) {
     this.initializeApp();
 
@@ -44,6 +47,11 @@ export class MyApp {
     this.platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+      this.Storage.set('deviceSize', {
+        width: this.platform.width(),
+        height: this.platform.height(),
+      });
+      
       this.AuthenticationProvider.getCurrentUserData().subscribe(user => {
         if (!this.isAppInitialized) {
           this.nav.setRoot(HomePage);
@@ -73,9 +81,9 @@ export class MyApp {
   //   this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(ListListPage, [currentUserId, true]));
   // }
 
-  // public openProfilePage(): void {
-  //   this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(ProfilePage, [currentUserId, true]));
-  // }
+  public openProfilePage(): void {
+    this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(ProfilePage, [currentUserId, true]));
+  }
 
   // public openRelationshipsPage(): void {
   //   this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(RelationshipPage, [currentUserId, true]));
