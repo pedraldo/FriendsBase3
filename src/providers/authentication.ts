@@ -126,7 +126,6 @@ export class AuthenticationProvider {
             } else {
                 this.AngularFireAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider())
                 .then(facebookData => {
-                    console.log(facebookData);
                     this.AngularFireDatabase.list('users').update(facebookData.user.uid, {
                         id: facebookData.user.uid,
                         facebookId: facebookData.user.providerData[0].uid,
