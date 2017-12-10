@@ -65,12 +65,10 @@ export class GroupDetailPage {
   }
 
   public openProfilePage(userId: string): void {
-    debugger;
     this.NavController.push(ProfilePage, [userId, userId === this.currentUserId]);
   }
 
   public removeMemberFromCurrentGroup(user: IUser, group: IGroup) {
-    debugger;
     this.AlertController.create({
       title: 'Supprimer un membre du groupe ?',
       message: `Etes vous sûr de vouloir retirer ${user.name} du groupe ${group.name} ?`,

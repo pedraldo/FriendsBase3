@@ -1,3 +1,4 @@
+import { RelationshipTabsPage } from './../pages/relationship/relationship-tabs/relationship-tabs';
 import { ProfilePage } from './../pages/profile/profile';
 import { Storage } from '@ionic/storage';
 import { GroupListPage } from './../pages/group/group-list/group-list';
@@ -51,7 +52,7 @@ export class MyApp {
         width: this.platform.width(),
         height: this.platform.height(),
       });
-      
+
       this.AuthenticationProvider.getCurrentUserData().subscribe(user => {
         if (!this.isAppInitialized) {
           this.nav.setRoot(HomePage);
@@ -85,9 +86,9 @@ export class MyApp {
     this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(ProfilePage, [currentUserId, true]));
   }
 
-  // public openRelationshipsPage(): void {
-  //   this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(RelationshipPage, [currentUserId, true]));
-  // }
+  public openRelationshipsPage(): void {
+    this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(RelationshipTabsPage, [currentUserId, true]));
+  }
 
   public logout(): void {
   	this.AuthenticationProvider.logout();

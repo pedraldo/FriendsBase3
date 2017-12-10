@@ -1,4 +1,4 @@
-import { ProfilePage } from './../pages/profile/profile';
+import { RelationshipTabsPage } from './../pages/relationship/relationship-tabs/relationship-tabs';
 import { BrowserModule } from '@angular/platform-browser';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { IonicApp, IonicErrorHandler, IonicModule } from 'ionic-angular';
@@ -24,6 +24,9 @@ import { GroupDetailPage } from './../pages/group/group-detail/group-detail';
 import { GroupSearchPage } from './../pages/group/group-search/group-search';
 import { GroupChangeAdminModalPage } from './../pages/group/group-change-admin-modal/group-change-admin-modal';
 import { GroupInvitationPage } from '../pages/group/group-invitation/group-invitation';
+import { ProfilePage } from './../pages/profile/profile';
+import { FollowersTabPage } from './../pages/relationship/followers-tab/followers-tab';
+import { FollowedTabPage } from './../pages/relationship/followed-tab/followed-tab';
 
 // Providers
 import { AuthenticationProvider } from '../providers/authentication';
@@ -58,7 +61,10 @@ export const firebaseConfig = {
     GroupSearchPage,
     GroupChangeAdminModalPage,
     GroupInvitationPage,
-    ProfilePage
+    ProfilePage,
+    FollowedTabPage,
+    FollowersTabPage,
+    RelationshipTabsPage
   ],
   imports: [
     BrowserModule,
@@ -83,7 +89,10 @@ export const firebaseConfig = {
     GroupSearchPage,
     GroupChangeAdminModalPage,
     GroupInvitationPage,
-    ProfilePage
+    ProfilePage,
+    RelationshipTabsPage,
+    FollowedTabPage,
+    FollowersTabPage
   ],
   providers: [
     StatusBar,
@@ -93,7 +102,7 @@ export const firebaseConfig = {
     DataProvider,
     AuthenticationProvider,
     GroupProvider,
-    RelationshipProvider
+    RelationshipProvider  
   ]
 })
 export class AppModule {}

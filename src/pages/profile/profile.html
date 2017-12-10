@@ -15,8 +15,8 @@
       <ion-card-content text-center>
           <h1>{{ user.name }}</h1>
           <h2>{{ user.email }}</h2>
-          <!-- <button ion-button round color="default" *ngIf="!isCurrentUserProfile && !isCurrentUserRelationship" (click)="addUserToRelationships(user.id)">Suivre</button>
-          <button ion-button round outline color="default" *ngIf="!isCurrentUserProfile && isCurrentUserRelationship" (click)="removeUserFromRelationships(user.id)">Suivi</button> -->
+          <button ion-button round color="default" *ngIf="!isCurrentUserProfile && !isCurrentUserRelationship" (click)="addUserToRelationships(user.id)">Suivre</button>
+          <button ion-button round outline color="default" *ngIf="!isCurrentUserProfile && isCurrentUserRelationship" (click)="removeUserFromRelationships(user.id)">Suivi</button>
       </ion-card-content>
   </ion-card>
   <ion-card *ngIf="!!userGroups.length">

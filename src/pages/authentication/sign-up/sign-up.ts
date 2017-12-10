@@ -40,7 +40,6 @@ export class SignUpPage {
       content: 'Chargement ...'
     });
     this.AuthenticationProvider.registerUser(this.form.email, this.form.password).subscribe(registerData => {
-      debugger;
       this.AuthenticationProvider.loginWithEmail(registerData.email, registerData.password).subscribe(loginData => {
         loading.dismiss();
         this.NavController.setRoot(HomePage);

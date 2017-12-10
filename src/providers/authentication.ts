@@ -162,7 +162,8 @@ export class AuthenticationProvider {
     }
 
     public logout(): Promise<void> {
-        this.Storage.clear();
+        this.Storage.remove('currentUserId');
+        this.Storage.remove('currentUserFacebookId');
         return this.AngularFireAuth.auth.signOut();
     }
 }

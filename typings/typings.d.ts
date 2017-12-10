@@ -36,6 +36,12 @@ interface IUser {
 
 interface IPersistedUser extends IUser, IPersistedResource { }
 
+// Relationship
+interface IRelationship {
+    followers: IRelationObject;
+    followed: IRelationObject;
+}
+
 // Basic credentials
 interface IBasicCredentials {
     email: string,
