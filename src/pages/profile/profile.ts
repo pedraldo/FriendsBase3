@@ -60,11 +60,11 @@ export class ProfilePage {
           this.photoUrl = this.AuthenticationProvider.getFacebookUserPhotoURL(this.user.facebookId, deviceSize.width, null);
         })
       } else {
-        this.photoUrl = this.user.image;
+        this.photoUrl = `${this.user.image}&size=256`;
       }
 
       this.RelationshipProvider.getUserRelationships(this.userId).subscribe(userRelationships => {
-        if (this.isCurrentUserProfile) {
+        if (this.isCurrentUserProfile && !!userRelationships) {
           let obsvArray: Observable<IUser>[] = [];
           _.forEach(userRelationships.followed, (value, key) => {
             obsvArray.push(this.AuthenticationProvider.getUserData(value));

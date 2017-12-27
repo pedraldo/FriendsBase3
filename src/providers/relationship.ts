@@ -32,7 +32,7 @@ export class RelationshipProvider {
         return Observable.create(observer => {
             this.AuthenticationProvider.getUserData(userId).subscribe(userData => {
                 if (!!userData) {
-                    observer.next(userData.relationships.followers);
+                    !!userData.relationships ? observer.next(userData.relationships.followers) : observer.next([]);
                 } else {
                     observer.error();
                 }
@@ -44,7 +44,7 @@ export class RelationshipProvider {
         return Observable.create(observer => {
             this.AuthenticationProvider.getUserData(userId).subscribe(userData => {
                 if (!!userData) {
-                    observer.next(userData.relationships.followed);
+                    !!userData.relationships ? observer.next(userData.relationships.followed) : observer.next([]);
                 } else {
                     observer.error();
                 }

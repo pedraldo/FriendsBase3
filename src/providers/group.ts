@@ -53,13 +53,17 @@ export class GroupProvider {
       return Observable.create(observer => {
         this.DataProvider.list(`users/${userId}/groups`).subscribe(userGroupsId => {
           if (userGroupsId) {
-            let obsvArray: Observable<IPersistedGroup>[] = [];
-            userGroupsId.forEach(groupId => {
-              obsvArray.push(this.getGroupData(groupId));
-            });
-            Observable.forkJoin(obsvArray).subscribe(groupUsers => {
-              observer.next(groupUsers);
-            });
+            if (userGroupsId.length) {
+              let obsvArray: Observable<IPersistedGroup>[] = [];
+              userGroupsId.forEach(groupId => {
+                obsvArray.push(this.getGroupData(groupId));
+              });
+              Observable.forkJoin(obsvArray).subscribe(groupUsers => {
+                observer.next(groupUsers);
+              });
+            } else {
+              observer.next([]);
+            }
           } else {
             observer.error();
           }

@@ -23,7 +23,9 @@ export class SignUpPage {
   ) {
     this.form = {
       email: '',
-      password: ''
+      password: '',
+      firstname: '',
+      lastname: ''
     };
   }
 
@@ -39,7 +41,7 @@ export class SignUpPage {
     let loading = this.LoadingController.create({
       content: 'Chargement ...'
     });
-    this.AuthenticationProvider.registerUser(this.form.email, this.form.password).subscribe(registerData => {
+    this.AuthenticationProvider.registerUser(this.form.email, this.form.password, this.form.firstname, this.form.lastname).subscribe(registerData => {
       this.AuthenticationProvider.loginWithEmail(registerData.email, registerData.password).subscribe(loginData => {
         loading.dismiss();
         this.NavController.setRoot(HomePage);

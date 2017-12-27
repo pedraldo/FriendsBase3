@@ -53,7 +53,6 @@ export class LoginEmailPage {
     loading.present();
 
     this.AuthenticationProvider.loginWithEmail(this.form.email, this.form.password).subscribe(data => {
-      this.Storage.set('currentUserId', data.uid);
       loading.dismiss();
       this.NavController.setRoot(HomePage);
     }, error => {

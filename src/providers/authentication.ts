@@ -9,6 +9,29 @@ import firebase from 'firebase';
 
 import { DataProvider } from './data';
 
+const profileColorsCode = [
+    // http://htmlcolorcodes.com/fr/ line 6 of color table
+    'C0392B',
+    'E74C3C',
+    '9B59B6',
+    '8E44AD',
+    '2980B9',
+    '3498DB',
+    '1ABC9C',
+    '16A085',
+    '27AE60',
+    '2ECC71',
+    'F1C40F',
+    'F39C12',
+    'E67E22',
+    'D35400',
+    'BDC3C7',
+    '95A5A6',
+    '7F8C8D',
+    '34495E',
+    '2C3E50'
+];
+
 @Injectable()
 export class AuthenticationProvider {
 
@@ -59,16 +82,20 @@ export class AuthenticationProvider {
         })
     } 
 
-    public registerUser(email: string, password: string): Observable<IBasicCredentials> {
+    public registerUser(email: string, password: string, firstname: string, lastname: string): Observable<IBasicCredentials> {
         return Observable.create(observer => {
             this.AngularFireAuth.auth.createUserWithEmailAndPassword(email, password).then(authenticationData => {
+                const randomIndex = Math.round(Math.random() * profileColorsCode.length);
+                const randomColor = profileColorsCode[randomIndex];
                 this.AngularFireDatabase.list('users').update(authenticationData.uid, {
                     id: authenticationData.uid,
-                    name: authenticationData.auth.email,
-                    email: authenticationData.auth.email,
+                    name: `${firstname} ${lastname}`,
+                    firstname,
+                    lastname,
+                    email: authenticationData.email,
                     emailVerified: false,
                     provider: 'email',
-                    image: null
+                    image: `https://ui-avatars.com/api/?name=${firstname}+${lastname}&color=FFF&background=${randomColor}`
                 });
                 observer.next({email, password, created: true});
             }).catch((error: any) => {
@@ -77,7 +104,7 @@ export class AuthenticationProvider {
                   case 'INVALID_EMAIL':
                     observer.error('E-mail invalide.');
                   break;
-                  case 'EMAIL_TAKEN':
+                  case "auth/email-already-in-use":
                     observer.error('Cet e-mail est déjà utilisé');
                   break;
                   case 'NETWORK_ERROR':
@@ -95,6 +122,7 @@ export class AuthenticationProvider {
         return Observable.create(observer => {
             this.AngularFireAuth.auth.signInWithEmailAndPassword(email, password)
             .then((authenticationData) => {
+                this.Storage.set('currentUserId', authenticationData.uid);
                 observer.next(authenticationData);
             }).catch((error) => {
                 observer.error(error);
@@ -112,6 +140,8 @@ export class AuthenticationProvider {
                             id: firebaseData.user.uid,
                             facebookId: firebaseData.user.providerData[0].uid,
                             name: firebaseData.user.displayName,
+                            firstname: firebaseData.additionalUserInfo.profile.first_name,
+                            lastname: firebaseData.additionalUserInfo.profile.last_name,
                             email: firebaseData.user.email,
                             provider: 'facebook',
                             image: firebaseData.additionalUserInfo.profile.picture.data.url,
@@ -130,6 +160,8 @@ export class AuthenticationProvider {
                         id: facebookData.user.uid,
                         facebookId: facebookData.user.providerData[0].uid,
                         name: facebookData.user.displayName,
+                        firstname: facebookData.additionalUserInfo.profile.first_name,
+                        lastname: facebookData.additionalUserInfo.profile.last_name,
                         email: facebookData.user.email,
                         provider: 'facebook',
                         image: facebookData.additionalUserInfo.profile.picture.data.url,
