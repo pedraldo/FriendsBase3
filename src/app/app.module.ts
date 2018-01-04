@@ -27,6 +27,7 @@ import { GroupInvitationPage } from '../pages/group/group-invitation/group-invit
 import { ProfilePage } from './../pages/profile/profile';
 import { FollowersTabPage } from './../pages/relationship/followers-tab/followers-tab';
 import { FollowedTabPage } from './../pages/relationship/followed-tab/followed-tab';
+import { SearchPeopleTabPage } from './../pages/relationship/search-people-tab/search-people-tab';
 
 // Providers
 import { AuthenticationProvider } from '../providers/authentication';
@@ -64,6 +65,7 @@ export const firebaseConfig = {
     ProfilePage,
     FollowedTabPage,
     FollowersTabPage,
+    SearchPeopleTabPage,
     RelationshipTabsPage
   ],
   imports: [
@@ -92,7 +94,8 @@ export const firebaseConfig = {
     ProfilePage,
     RelationshipTabsPage,
     FollowedTabPage,
-    FollowersTabPage
+    FollowersTabPage,
+    SearchPeopleTabPage
   ],
   providers: [
     StatusBar,
