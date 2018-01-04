@@ -54,6 +54,8 @@ export class SearchPeopleTabPage {
             this.isPersonFollowed = id === this.currentUserId;
             if (this.isPersonFollowed) break;
           }
+        } else {
+          this.isPersonFollowed = false;
         }
       }
       this.isSearchInProgress = false;
