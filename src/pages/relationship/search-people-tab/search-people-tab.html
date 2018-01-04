@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-navbar primary>
+    <button ion-button menuToggle icon-only>
+      <ion-icon name='menu'></ion-icon>
+    </button>
+    <ion-title>
+      Recherche de personne
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col col-12>
+        <h5>Entrez l'email de la personne recherchée</h5>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-8>
+        <ion-list>
+          <ion-item>
+            <ion-input type="email" value="" placeholder="Email" [(ngModel)]="emailSearched"></ion-input>
+          </ion-item>
+        </ion-list>
+      </ion-col>
+      <ion-col col-4>
+        <button ion-button color="primary" (click)="getUserByEmail()">Valider</button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-card *ngIf="isPersonSearched">
+    <ion-card-header>
+      <ion-list>
+        <ion-item>
+          <ion-label>Résultat de la recherche</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-spinner *ngIf="isSearchInProgress" name="crescent"></ion-spinner>
+        <ion-item *ngIf="isPersonSearched && isPersonFound">
+          <ion-avatar item-left (click)="openProfilePage(personFound.id)">
+            <img src="{{ personFound.image }}">
+          </ion-avatar>
+          <ion-label itel-left (click)="openProfilePage(personFound.id)">{{ personFound.name }}</ion-label>
+          <button *ngIf="!isPersonFollowed" ion-button item-right color="primary" (click)="followUser(personFound.id)">
+            <span *ngIf="!isAddingInProgress">Suivre</span>
+            <span>
+              <ion-spinner *ngIf="isAddingInProgress" name="crescent"></ion-spinner>
+            </span>
+          </button>
+          <button *ngIf="isPersonFollowed" ion-button color="primary" outline item-right (click)="unfollowUser(personFound.id)">Suivi</button>
+        </ion-item>
+        <ion-item *ngIf="isPersonSearched && !isPersonFound && !isSearchInProgress">
+          <ion-label>Aucune personne trouvée</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
