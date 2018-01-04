@@ -21,7 +21,7 @@ export class FollowedTabPage {
   private userId: string;
   private currentUserId: string;
   public isCurrentUserProfile: boolean;
-  public followedUsers: IUser[];
+  public followedUsers: IUserMainInfo[];
 
   constructor(
     private NavController: NavController, 
@@ -41,9 +41,9 @@ export class FollowedTabPage {
 
   ngOnInit(): void {
     this.RelationshipProvider.getUserRelationshipsFollowed(this.userId).subscribe(followedUsers => {
-      let obsvArray: Observable<IUser>[] = [];
+      let obsvArray: Observable<IUserMainInfo>[] = [];
       _.forEach(followedUsers, (value, key) => {
-        obsvArray.push(this.AuthenticationProvider.getUserData(key));
+        obsvArray.push(this.AuthenticationProvider.getUserMainInformations(value.id));
       });
       Observable.forkJoin(obsvArray).subscribe(followedUsersData => {
         this.followedUsers = followedUsersData;

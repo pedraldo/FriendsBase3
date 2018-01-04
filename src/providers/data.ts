@@ -5,7 +5,7 @@ import { Observable } from 'rxjs/Observable';
 @Injectable()
 export class DataProvider {
 	constructor(
-        private AngularFireDatabase: AngularFireDatabase
+		private AngularFireDatabase: AngularFireDatabase
 	) {
 
 	}
@@ -21,7 +21,7 @@ export class DataProvider {
 	}
 
 	public update(path: string, data: any): Promise<void> {
-        return this.AngularFireDatabase.object(path).update(data);
+		return this.AngularFireDatabase.object(path).update(data);
 	}
 
 	public list(path: string): Observable<any> {
@@ -32,7 +32,7 @@ export class DataProvider {
 		return this.AngularFireDatabase.object(path).valueChanges();
 	}
 
-	public remove(path: string): void {
-		this.AngularFireDatabase.object(path).remove();
+	public remove(path: string): Promise<void> {
+		return this.AngularFireDatabase.object(path).remove();
 	}
 }

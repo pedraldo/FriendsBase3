@@ -16,8 +16,8 @@ export class GroupProvider {
 
     public getGroupData(groupId: string): Observable<IPersistedGroup> {
       return Observable.create(observer => {
-        this.DataProvider.object('groups/' + groupId).subscribe(groupData => {
-          if (groupData) {
+        this.DataProvider.object(`groups/${groupId}`).subscribe(groupData => {
+          if (!!groupData) {
             observer.next(groupData);
             observer.complete();
           } else {
@@ -27,17 +27,19 @@ export class GroupProvider {
       });
     }
 
-    public getGroupUsers(groupId: string): Observable<IPersistedUser[]> {
+    public getGroupUsers(groupId: string): Observable<IUserMainInfo[]> {
       return Observable.create(observer => {
         this.DataProvider.list(`groups/${groupId}/users`).subscribe(groupUsersId => {
-          let obsvArray: Observable<IPersistedUser>[] = [];
-          if (groupUsersId) {
+          let obsvArray: Observable<IUserMainInfo>[] = [];
+          if (groupUsersId.length) {
             groupUsersId.forEach(userId => {
-              obsvArray.push(this.AuthenticationProvider.getUserData(userId));
+              obsvArray.push(this.AuthenticationProvider.getUserMainInformations(userId));
             });
             Observable.forkJoin(obsvArray).subscribe(groupUsers => {
               observer.next(groupUsers);
             });
+          } else if (groupUsersId === null){
+            observer.next([]);
           } else {
             observer.error();
           }
@@ -86,8 +88,8 @@ export class GroupProvider {
       }
     }
 
-    public removeGroup(groupId: string): void {
-      this.DataProvider.remove(`groups/${groupId}`);
+    public removeGroup(groupId: string): Promise<void> {
+      return this.DataProvider.remove(`groups/${groupId}`);
     }
 
     public addUserToGroup(userId: string, groupId: string): Promise<void[]> {
@@ -103,15 +105,15 @@ export class GroupProvider {
       ]);
     }
 
-    public removeMemberFromGroup(userId: string, groupId: string): void {
-      this.DataProvider.remove(`/users/${userId}/groups/${groupId}`);
-      this.DataProvider.remove(`/groups/${groupId}/users/${userId}`);
+    public removeMemberFromGroup(userId: string, groupId: string): Promise<void[]> {
+      return Promise.all([
+        this.DataProvider.remove(`/users/${userId}/groups/${groupId}`),
+        this.DataProvider.remove(`/groups/${groupId}/users/${userId}`)
+      ]);
     }
 
     public isMemberSuperAdminOfGroup(userId: string, groupId: string): Promise<boolean> {
-      return this.getGroupData(groupId).toPromise().then(groupData => {
-        return (userId === groupData.superAdmin);
-      });
+      return this.getGroupData(groupId).toPromise().then(groupData => userId === groupData.superAdmin);
     }
 
     public updateGroupSuperAdmin(groupId: string, userId: string): Promise<void> {
@@ -124,23 +126,27 @@ export class GroupProvider {
       return this.DataProvider.update(`groups/${groupId}/joinRequests`, userRef);
     }
 
-    public removeGroupJoinRequest(groupId: string, userId: string): void {
+    public removeGroupJoinRequest(groupId: string, userId: string): Promise<void> {
       return this.DataProvider.remove(`/groups/${groupId}/joinRequests/${userId}`);
     }
 
-    public getGroupJoinRequestsUsers(groupId: string): Observable<any> {
+    public getGroupJoinRequestsUsers(groupId: string): Observable<IUserMainInfo[]> {
       return Observable.create(observer => {
         this.DataProvider.list(`groups/${groupId}/joinRequests`).subscribe(joinRequestsUserId => {
-          if (joinRequestsUserId.length) {
-            let obsvArray: Observable<any>[] = [];
-            _.forEach(joinRequestsUserId, joinRequestUserId => {
-              obsvArray.push(this.AuthenticationProvider.getUserData(joinRequestUserId));
-            });
-            Observable.forkJoin(obsvArray).subscribe(joinRequestUsers => {
-              observer.next(joinRequestUsers);
-            });
+          if (joinRequestsUserId) {
+            if (joinRequestsUserId.length) {
+              let obsvArray: Observable<IUserMainInfo>[] = [];
+              _.forEach(joinRequestsUserId, joinRequestUserId => {
+                obsvArray.push(this.AuthenticationProvider.getUserMainInformations(joinRequestUserId));
+              });
+              Observable.forkJoin(obsvArray).subscribe(joinRequestUsers => {
+                observer.next(joinRequestUsers);
+              });
+            } else {
+              observer.next([]);
+            }
           } else {
-            observer.next([]);
+            observer.error();
           }
         })
       });

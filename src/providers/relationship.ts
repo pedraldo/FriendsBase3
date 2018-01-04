@@ -1,10 +1,8 @@
-import { Observable } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { Injectable } from '@angular/core';
 
 import { DataProvider } from './data';
 import { AuthenticationProvider } from './authentication';
-
-import * as _ from 'lodash';
 
 @Injectable()
 export class RelationshipProvider {
@@ -18,9 +16,9 @@ export class RelationshipProvider {
 
     public getUserRelationships(userId: string): Observable<IRelationship> {
         return Observable.create(observer => {
-            this.AuthenticationProvider.getUserData(userId).subscribe(userData => {
-                if (!!userData) {
-                    observer.next(userData.relationships);
+            this.DataProvider.object(`users/${userId}/relationships`).subscribe(userRelationships => {
+                if (!!userRelationships || userRelationships === null) {
+                    observer.next(userRelationships);
                 } else {
                     observer.error();
                 }
@@ -30,9 +28,9 @@ export class RelationshipProvider {
 
     public getUserRelationshipsFollowers(userId: string): Observable<IRelationObject[]> {
         return Observable.create(observer => {
-            this.AuthenticationProvider.getUserData(userId).subscribe(userData => {
-                if (!!userData) {
-                    !!userData.relationships ? observer.next(userData.relationships.followers) : observer.next([]);
+            this.DataProvider.list(`users/${userId}/relationships/followers`).subscribe(userFollowers => {
+                if (!!userFollowers || userFollowers === null) {
+                    observer.next(userFollowers)
                 } else {
                     observer.error();
                 }
@@ -42,9 +40,9 @@ export class RelationshipProvider {
 
     public getUserRelationshipsFollowed(userId: string): Observable<IRelationObject[]> {
         return Observable.create(observer => {
-            this.AuthenticationProvider.getUserData(userId).subscribe(userData => {
-                if (!!userData) {
-                    !!userData.relationships ? observer.next(userData.relationships.followed) : observer.next([]);
+            this.DataProvider.list(`users/${userId}/relationships/followed`).subscribe(usersFollowed => {
+                if (!!usersFollowed || usersFollowed === null) {
+                    observer.next(usersFollowed);
                 } else {
                     observer.error();
                 }
@@ -54,12 +52,12 @@ export class RelationshipProvider {
 
     public isUser1FollowerOfUser2(user1Id: string, user2Id: string): Observable<boolean> {
         return Observable.create(observer => {
-            let isInRelationships = false;
-            this.getUserRelationshipsFollowers(user2Id).subscribe(user2Relationships => {
-                _.forEach(user2Relationships, (value, key) => {
-                    if (key === user1Id) isInRelationships = true;
-                });
-                observer.next(isInRelationships);
+            this.DataProvider.object(`users/${user1Id}/relationships/followed/${user2Id}`).subscribe(result => {
+                if (!!result || result === null) {
+                    observer.next(!!result);
+                } else {
+                    observer.error();
+                }
             });
         });
     }
@@ -67,16 +65,28 @@ export class RelationshipProvider {
     public addUser1InUser2Relationships(user1Id: string, user2Id: string): Promise<void[]> {
         let user1RelationshipRef = {};
         let user2RelationshipRef = {};
-        user1RelationshipRef[user2Id] = user2Id;
-        user2RelationshipRef[user1Id] = user1Id;
 
-        return Promise.all([
-            this.DataProvider.update(`users/${user1Id}/relationships/followers/`, user1RelationshipRef),
-            this.DataProvider.update(`users/${user2Id}/relationships/followed/`, user2RelationshipRef)
-        ]);
+        let obsvArray: Observable<IUserMainInfo>[] = [
+            this.AuthenticationProvider.getUserMainInformations(user1Id),
+            this.AuthenticationProvider.getUserMainInformations(user2Id)
+        ];
+
+        return new Promise((resolve, reject) => {
+            Observable.forkJoin(obsvArray).subscribe(([user1MainInfos, user2MainInfos]) => {
+                user1RelationshipRef[user2Id] = user2MainInfos;
+                user2RelationshipRef[user1Id] = user1MainInfos;
+                Promise.all([
+                    this.DataProvider.update(`users/${user1Id}/relationships/followers/`, user1RelationshipRef),
+                    this.DataProvider.update(`users/${user2Id}/relationships/followed/`, user2RelationshipRef)
+                ]);
+            });
+        });
     }
 
-    public removeUser1FromUser2Realtionships(user1Id: string, user2Id: string): void {
-        return this.DataProvider.remove(`users/${user2Id}/relationships/${user1Id}`);
+    public removeUser1FromUser2Realtionships(user1Id: string, user2Id: string): Promise<void[]> {
+        return Promise.all([
+            this.DataProvider.remove(`users/${user2Id}/relationships/followed/${user1Id}`),
+            this.DataProvider.remove(`users/${user1Id}/relationships/followers/${user2Id}`)
+        ]);
     }
 }

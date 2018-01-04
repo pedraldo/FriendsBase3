@@ -3,7 +3,6 @@ import { SignUpPage } from './../sign-up/sign-up';
 import { AuthenticationProvider } from './../../../providers/authentication';
 import { Component } from '@angular/core';
 import { NavController, LoadingController, ToastController } from 'ionic-angular';
-import { Storage } from '@ionic/storage';
 import { HomePage } from '../../home/home';
 
 /**
@@ -25,8 +24,7 @@ export class LoginEmailPage {
     private NavController: NavController,
     private AuthenticationProvider: AuthenticationProvider,
     private LoadingController: LoadingController,
-    private ToastController: ToastController,
-    private Storage: Storage
+    private ToastController: ToastController
   ) {
     this.form = {
       email: '',

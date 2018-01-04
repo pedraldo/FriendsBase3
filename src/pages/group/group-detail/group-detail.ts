@@ -1,7 +1,7 @@
+import { Storage } from '@ionic/storage';
 import { ProfilePage } from './../../profile/profile';
 import { GroupInvitationPage } from './../group-invitation/group-invitation';
 import { GroupChangeAdminModalPage } from './../group-change-admin-modal/group-change-admin-modal';
-import { AuthenticationProvider } from './../../../providers/authentication';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
 import { AlertController, ModalController, NavController, NavParams, ToastController } from 'ionic-angular';
@@ -12,26 +12,26 @@ import { AlertController, ModalController, NavController, NavParams, ToastContro
 })
 export class GroupDetailPage {
   public group: IGroup;
-  public groupUsers: IUser[];
-  public joinRequestUsers: any[] = [];
+  public groupUsers: IUserMainInfo[];
+  public joinRequestUsers: IUserMainInfo[] = [];
   public currentUser: IUser;
-  public superAdminUser: IUser;
+  public superAdminUser: IUserMainInfo;
   public currentUserId = '';
   public isCurrentUserSuperAdmin = false;
   public isCurrentUserMemberOfGroup = false;
   public areGroupUsersLoaded = false;
   public hasCurrentUserAlreadyMadeJoinRequest = false;
 
-  private isRemovingCurrentUserFromGroup = false;  
+  private isRemovingCurrentUserFromGroup = false;
 
   constructor(
     private NavController: NavController, 
     private NavParams: NavParams,
     private GroupProvider: GroupProvider,
-    private AuthenticationProvider: AuthenticationProvider,
     private AlertController: AlertController,
     private ModalController: ModalController,
-    private ToastController: ToastController
+    private ToastController: ToastController,
+    private Storage: Storage
   ) {
     this.group = this.NavParams.data;
   }
@@ -44,14 +44,14 @@ export class GroupDetailPage {
     this.GroupProvider.getGroupUsers(this.group.id).subscribe(groupUsers => {
       this.groupUsers = groupUsers;
       
-      this.AuthenticationProvider.getCurrentUserData().subscribe(currentUserData => {
-        this.currentUser = currentUserData;
-        this.currentUserId = currentUserData.id;
+      this.Storage.get('currentUserId').then(currentUserId => {
+        this.currentUserId = currentUserId;
         this.isCurrentUserMemberOfGroup = !!this.groupUsers.find(groupUser => groupUser.id === this.currentUserId);
         this.isCurrentUserSuperAdmin = this.isCurrentUserMemberOfGroup ? this.currentUserId === this.group.superAdmin : false;
-        this.superAdminUser = !this.isCurrentUserSuperAdmin ? this.groupUsers.find(groupUser => groupUser.id === this.group.superAdmin) : this.currentUser;
+        this.superAdminUser = this.groupUsers.find(groupUser => groupUser.id === this.group.superAdmin);
+        
         this.areGroupUsersLoaded = true;
-
+  
         this.GroupProvider.getGroupJoinRequestsUsers(this.group.id).subscribe(joinRequestsUsers => {
           this.joinRequestUsers = joinRequestsUsers;
           this.hasCurrentUserAlreadyMadeJoinRequest = !!this.isCurrentUserMemberOfGroup ? false : !!this.joinRequestUsers.find(joinRequestsUser => joinRequestsUser.id === this.currentUserId);
@@ -68,10 +68,10 @@ export class GroupDetailPage {
     this.NavController.push(ProfilePage, [userId, userId === this.currentUserId]);
   }
 
-  public removeMemberFromCurrentGroup(user: IUser, group: IGroup) {
+  public removeMemberFromCurrentGroup(user: IUserMainInfo, group: IGroup) {
     this.AlertController.create({
       title: 'Supprimer un membre du groupe ?',
-      message: `Etes vous sûr de vouloir retirer ${user.name} du groupe ${group.name} ?`,
+      message: `Etes vous sûr de vouloir retirer ${user.firstname} ${user.lastname} du groupe ${group.name} ?`,
       buttons: [
         {
           text: 'Oui',
@@ -136,23 +136,23 @@ export class GroupDetailPage {
     }
   }
 
-  public acceptJoinRequest(userId: string, userName: string): void {
+  public acceptJoinRequest(userId: string, userFirstname: string, userLastname: string): void {
     this.joinRequestUsers = this.joinRequestUsers.filter(joinRequestUser => joinRequestUser.id !== userId);
     this.GroupProvider.removeGroupJoinRequest(this.group.id, userId);
     this.GroupProvider.addUserToGroup(userId, this.group.id).then(() => {
       let toast = this.ToastController.create({
-        message: `${userName} vient d'être ajouté au groupe ${this.group.name}.`,
+        message: `${userFirstname} ${userLastname} vient d'être ajouté au groupe ${this.group.name}.`,
         duration: 4000
       });
       toast.present();
     });
   }
 
-  public refuseJoinRequest(userId: string, userName: string): void {
+  public refuseJoinRequest(userId: string, userFirstname: string, userLastname: string): void {
     this.joinRequestUsers = this.joinRequestUsers.filter(joinRequestUser => joinRequestUser.id !== userId);
     this.GroupProvider.removeGroupJoinRequest(this.group.id, userId);
     let toast = this.ToastController.create({
-      message: `La demande d'intégration de ${userName} au groupe ${this.group.name} vient d'être refusée.`,
+      message: `La demande d'intégration de ${userFirstname} ${userLastname} au groupe ${this.group.name} vient d'être refusée.`,
       duration: 4000
     });
     toast.present();

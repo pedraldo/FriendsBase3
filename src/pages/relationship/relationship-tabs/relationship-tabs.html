@@ -1,4 +1,5 @@
 <ion-tabs>
     <ion-tab [root]="followedTabRoot" [rootParams]="tabParams" tabTitle="Suivis" tabIcon="star"></ion-tab>
     <ion-tab [root]="followersTabRoot" [rootParams]="tabParams" tabTitle="Me suivent" tabIcon="eye"></ion-tab>
+    <ion-tab *ngIf="isCurrentUserRelationships" [root]="searchPeopleTabRoot" [rootParams]="tabParams" tabTitle="Recherche" tabIcon="search"></ion-tab>
 </ion-tabs>

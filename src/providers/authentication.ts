@@ -50,7 +50,7 @@ export class AuthenticationProvider {
       return Observable.create(observer => {
         this.AngularFireAuth.authState.subscribe(authenticationData => {
             if (authenticationData) {
-                this.DataProvider.object('users/' + authenticationData.uid).subscribe(userData => {
+                this.DataProvider.object(`users/${authenticationData.uid}`).subscribe(userData => {
                     observer.next(userData);
                     observer.complete();
                 });
@@ -61,7 +61,7 @@ export class AuthenticationProvider {
       });
     }
 
-    public getUserData(userId: string): Observable<IPersistedUser> {
+    public getUserData(userId: string): Observable<IUser> {
       return Observable.create(observer => {
         this.DataProvider.object(`users/${userId}`).subscribe(userData => {
           if (userData) {
@@ -74,12 +74,31 @@ export class AuthenticationProvider {
       });
     }
 
+    public getUserMainInformations(userId: string): Observable<IUserMainInfo> {
+        return Observable.create(observer => {
+            this.DataProvider.object(`users/${userId}/profile`).subscribe(userMainInfo => {
+                if (!!userMainInfo) {
+                    observer.next(userMainInfo);
+                    observer.complete();
+                } else {
+                    observer.error();
+                }
+            });
+        });
+    }
+
     public getUserByEmail(email: string): Observable<IUser> {
         return Observable.create(observer => {
             this.DataProvider.list('users').subscribe(users => {
-                observer.next(users.find(user => user.email === email));
+                if (!!users) {
+                    observer.next(users.find(user => user.profile.email === email));
+                } else if (users === null) {
+                    observer.next([]);
+                } else {
+                    observer.error();
+                }
             })
-        })
+        });
     } 
 
     public registerUser(email: string, password: string, firstname: string, lastname: string): Observable<IBasicCredentials> {
@@ -88,14 +107,16 @@ export class AuthenticationProvider {
                 const randomIndex = Math.round(Math.random() * profileColorsCode.length);
                 const randomColor = profileColorsCode[randomIndex];
                 this.AngularFireDatabase.list('users').update(authenticationData.uid, {
-                    id: authenticationData.uid,
+                    profile: {
+                        id: authenticationData.uid,
+                        firstname,
+                        lastname,
+                        email: authenticationData.email,
+                        image: `https://ui-avatars.com/api/?name=${firstname}+${lastname}&color=FFF&background=${randomColor}`
+                    },
                     name: `${firstname} ${lastname}`,
-                    firstname,
-                    lastname,
-                    email: authenticationData.email,
                     emailVerified: false,
                     provider: 'email',
-                    image: `https://ui-avatars.com/api/?name=${firstname}+${lastname}&color=FFF&background=${randomColor}`
                 });
                 observer.next({email, password, created: true});
             }).catch((error: any) => {
@@ -137,14 +158,16 @@ export class AuthenticationProvider {
                     let provider: firebase.auth.AuthCredential = firebase.auth.FacebookAuthProvider.credential(facebookData.authResponse.accessToken);
                     firebase.auth().signInWithCredential(provider).then((firebaseData) => {
                         this.AngularFireDatabase.list('users').update(firebaseData.user.uid, {
-                            id: firebaseData.user.uid,
+                            profile: {
+                                id: firebaseData.user.uid,
+                                firstname: firebaseData.additionalUserInfo.profile.first_name,
+                                lastname: firebaseData.additionalUserInfo.profile.last_name,
+                                email: firebaseData.user.email,
+                                image: firebaseData.additionalUserInfo.profile.picture.data.url,
+                            },
                             facebookId: firebaseData.user.providerData[0].uid,
                             name: firebaseData.user.displayName,
-                            firstname: firebaseData.additionalUserInfo.profile.first_name,
-                            lastname: firebaseData.additionalUserInfo.profile.last_name,
-                            email: firebaseData.user.email,
                             provider: 'facebook',
-                            image: firebaseData.additionalUserInfo.profile.picture.data.url,
                             emailVerified: true
                         });
                         this.Storage.set('currentUserFacebookId', firebaseData.user.providerData[0].uid);
@@ -157,14 +180,16 @@ export class AuthenticationProvider {
                 this.AngularFireAuth.auth.signInWithPopup(new firebase.auth.FacebookAuthProvider())
                 .then(facebookData => {
                     this.AngularFireDatabase.list('users').update(facebookData.user.uid, {
-                        id: facebookData.user.uid,
+                        profile: {
+                            id: facebookData.user.uid,
+                            firstname: facebookData.additionalUserInfo.profile.first_name,
+                            lastname: facebookData.additionalUserInfo.profile.last_name,
+                            email: facebookData.user.email,
+                            image: facebookData.additionalUserInfo.profile.picture.data.url,
+                        },
                         facebookId: facebookData.user.providerData[0].uid,
                         name: facebookData.user.displayName,
-                        firstname: facebookData.additionalUserInfo.profile.first_name,
-                        lastname: facebookData.additionalUserInfo.profile.last_name,
-                        email: facebookData.user.email,
                         provider: 'facebook',
-                        image: facebookData.additionalUserInfo.profile.picture.data.url,
                         emailVerified: true
                     });
                     observer.next(facebookData.user);

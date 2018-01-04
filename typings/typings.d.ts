@@ -24,14 +24,26 @@ interface IPersistedGroup extends IGroup, IPersistedResource { }
 // User
 interface IUser {
     id: string;
-    email: string,
-    groups: IRelationObject,
-    name: string,
-    provider: string,
-    relationships: IRelationObject,
-    image: string,
-    emailVerified: boolean,
-    facebookId?: string
+    email: string;
+    groups: IRelationObject;
+    name: string;
+    provider: string;
+    relationships: {
+        followed: IRelationObject;
+        followers: IRelationObject
+    },
+    image: string;
+    emailVerified: boolean;
+    facebookId?: string;
+    profile: IUserMainInfo;
+}
+
+interface IUserMainInfo {
+    id: string;
+    email: string;
+    firstname: string;
+    lastname: string;
+    image: string;
 }
 
 interface IPersistedUser extends IUser, IPersistedResource { }

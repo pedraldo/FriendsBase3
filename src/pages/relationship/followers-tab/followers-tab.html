@@ -13,11 +13,11 @@
   <ion-list *ngIf="!!followerUsers.length">
     <ion-item *ngFor="let followerUser of followerUsers">
       <ion-avatar item-left (click)="openProfilePage(followerUser.id)">
-        <img src="{{followerUser.image}}">
+        <img src="{{ followerUser.image }}">
       </ion-avatar>
       <div (click)="openProfilePage(followerUser.id)">
-        <h2>{{followerUser.name}}</h2>
-        <p>{{followerUser.email}}</p>
+        <h2>{{ followerUser.firstname }} {{ followerUser.lastname }}</h2>
+        <p>{{ followerUser.email }}</p>
       </div>
     </ion-item>
   </ion-list>

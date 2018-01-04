@@ -19,7 +19,7 @@ export class ProfilePage {
   public photoUrl: string;
   public userGroups: IGroup[] = [];
   public userRelationships: IRelationObject;
-  public userRelationshipsData: any[];
+  public userRelationshipsData: IUserMainInfo[];
   public isCurrentUserProfile: boolean;
   public isCurrentUserRelationship: boolean;
 
@@ -51,27 +51,31 @@ export class ProfilePage {
       _.forEach(this.user.groups, (value, key) => {
         obsvArray.push(this.GroupProvider.getGroupData(value));
       });
-      Observable.forkJoin(obsvArray).subscribe(userGroups => {
-        this.userGroups = userGroups;
-      });
+      if (obsvArray.length) {
+        Observable.forkJoin(obsvArray).subscribe(userGroups => {
+          this.userGroups = userGroups;
+        });
+      }
 
       if (this.user.provider === "facebook") {
         this.Storage.get('deviceSize').then(deviceSize => {
           this.photoUrl = this.AuthenticationProvider.getFacebookUserPhotoURL(this.user.facebookId, deviceSize.width, null);
-        })
+        });
       } else {
-        this.photoUrl = `${this.user.image}&size=256`;
+        this.photoUrl = `${this.user.profile.image}&size=256`;
       }
 
       this.RelationshipProvider.getUserRelationships(this.userId).subscribe(userRelationships => {
         if (this.isCurrentUserProfile && !!userRelationships) {
-          let obsvArray: Observable<IUser>[] = [];
+          let obsvArray: Observable<IUserMainInfo>[] = [];
           _.forEach(userRelationships.followed, (value, key) => {
-            obsvArray.push(this.AuthenticationProvider.getUserData(value));
+            obsvArray.push(this.AuthenticationProvider.getUserMainInformations(value.id));
           });
-          Observable.forkJoin(obsvArray).subscribe(userRelationshipsData => {
-            this.userRelationshipsData = userRelationshipsData;
-          });
+          if (obsvArray.length) {
+            Observable.forkJoin(obsvArray).subscribe(userRelationshipsData => {
+              this.userRelationshipsData = userRelationshipsData;
+            });
+          }
         } else {
           this.Storage.get('currentUserId').then(currentUserId => {
             this.currentUserId = currentUserId;
