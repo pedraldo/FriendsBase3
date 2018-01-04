@@ -12,7 +12,7 @@
 <ion-content>
   <ion-searchbar #searchbar (ionInput)="getItems($event)"></ion-searchbar>
   <ion-list>
-    <ion-item *ngFor="let group of filteredGroups"(click)="openGroupPage(group)">
+    <ion-item *ngFor="let group of filteredGroups" (click)="openGroupPage(group)">
       <span item-left>{{ group.name }}</span>
       <ion-icon item-right *ngIf="group.superAdmin === currentUserId" name="star"></ion-icon>
     </ion-item>

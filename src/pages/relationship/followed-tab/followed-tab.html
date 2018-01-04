@@ -1,17 +1,18 @@
 <ion-header>
   <ion-navbar primary>
-      <button ion-button menuToggle icon-only>
-          <ion-icon name="menu"></ion-icon>
-      </button>
-      <ion-title>
-        Suivis
-      </ion-title>
+    <button ion-button menuToggle icon-only>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      Suivis
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
+  <ion-searchbar #searchbar (ionInput)="getItems($event)"></ion-searchbar>
   <ion-list *ngIf="!!followedUsers.length">
-    <ion-item *ngFor="let followedUser of followedUsers">
+    <ion-item *ngFor="let followedUser of filteredFollowedUsers">
       <ion-avatar item-left (click)="openProfilePage(followedUser.id)">
         <img src="{{ followedUser.image }}">
       </ion-avatar>
@@ -19,6 +20,7 @@
         <h2>{{ followedUser.firstname }} {{ followedUser.lastname }}</h2>
         <p>{{ followedUser.email }}</p>
       </div>
+      <button *ngIf="!!isCurrentUserProfile" ion-button color="primary" outline item-right (click)="unfollowUser(followedUser.id)">Ne plus suivre</button>
     </ion-item>
   </ion-list>
 </ion-content>

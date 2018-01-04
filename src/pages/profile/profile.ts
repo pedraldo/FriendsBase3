@@ -79,7 +79,7 @@ export class ProfilePage {
         } else {
           this.Storage.get('currentUserId').then(currentUserId => {
             this.currentUserId = currentUserId;
-            this.RelationshipProvider.isUser1FollowerOfUser2(this.user.id, currentUserId).subscribe(isCurrentUserRelationship => {
+            this.RelationshipProvider.isUser1FollowerOfUser2(this.currentUserId, this.user.id).subscribe(isCurrentUserRelationship => {
               this.isCurrentUserRelationship = isCurrentUserRelationship;
             })
           });
@@ -98,7 +98,7 @@ export class ProfilePage {
     });
   }
 
-  public removeUserFromRelationships(userId: string): void {
+  public removeUserFromRelationships(userId: string): Promise<void[]> {
     this.isCurrentUserRelationship = false;
     return this.RelationshipProvider.removeUser1FromUser2Realtionships(userId, this.currentUserId);  
   }

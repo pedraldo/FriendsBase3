@@ -41,17 +41,20 @@
       <ion-list>
         <ion-spinner *ngIf="isSearchInProgress" name="crescent"></ion-spinner>
         <ion-item *ngIf="isPersonSearched && isPersonFound">
-          <ion-avatar item-left (click)="openProfilePage(personFound.id)">
-            <img src="{{ personFound.image }}">
+          <ion-avatar item-left (click)="openProfilePage(personFound.profile.id)">
+            <img src="{{ personFound.profile.image }}">
           </ion-avatar>
-          <ion-label itel-left (click)="openProfilePage(personFound.id)">{{ personFound.name }}</ion-label>
-          <button *ngIf="!isPersonFollowed" ion-button item-right color="primary" (click)="followUser(personFound.id)">
+          <div (click)="openProfilePage(personFound.profile.id)">
+            <h2>{{ personFound.name }}</h2>
+            <p>{{ personFound.email }}</p>
+          </div>
+          <button *ngIf="!isPersonFollowed" ion-button item-right color="primary" (click)="followUser(personFound.profile.id)">
             <span *ngIf="!isAddingInProgress">Suivre</span>
             <span>
               <ion-spinner *ngIf="isAddingInProgress" name="crescent"></ion-spinner>
             </span>
           </button>
-          <button *ngIf="isPersonFollowed" ion-button color="primary" outline item-right (click)="unfollowUser(personFound.id)">Suivi</button>
+          <button *ngIf="isPersonFollowed" ion-button color="primary" outline item-right (click)="unfollowUser(personFound.profile.id)">Suivi</button>
         </ion-item>
         <ion-item *ngIf="isPersonSearched && !isPersonFound && !isSearchInProgress">
           <ion-label>Aucune personne trouvée</ion-label>

@@ -22,6 +22,7 @@ export class FollowedTabPage {
   private currentUserId: string;
   public isCurrentUserProfile: boolean;
   public followedUsers: IUserMainInfo[];
+  public filteredFollowedUsers: IUserMainInfo[];
 
   constructor(
     private NavController: NavController, 
@@ -41,14 +42,39 @@ export class FollowedTabPage {
 
   ngOnInit(): void {
     this.RelationshipProvider.getUserRelationshipsFollowed(this.userId).subscribe(followedUsers => {
-      let obsvArray: Observable<IUserMainInfo>[] = [];
-      _.forEach(followedUsers, (value, key) => {
-        obsvArray.push(this.AuthenticationProvider.getUserMainInformations(value.id));
-      });
-      Observable.forkJoin(obsvArray).subscribe(followedUsersData => {
-        this.followedUsers = followedUsersData;
-      });
+      if (!!followedUsers) {
+        let obsvArray: Observable<IUserMainInfo>[] = [];
+        _.forEach(followedUsers, (value, key) => {
+          obsvArray.push(this.AuthenticationProvider.getUserMainInformations(value.id));
+        });
+        Observable.forkJoin(obsvArray).subscribe(followedUsersData => {
+          this.followedUsers = followedUsersData;
+          this.filteredFollowedUsers = this.followedUsers;
+        });
+      } else {
+        this.followedUsers = [];
+        this.filteredFollowedUsers = [];
+      }
     });
+  }
+
+  public getItems(event: any) {
+    let val = event.target.value;
+
+    if (val && val.trim() != '' && val.length > 0) {
+      this.filteredFollowedUsers = this.followedUsers.filter((followedUser: IUserMainInfo) => {
+        let name = `${followedUser.firstname.toLowerCase()} ${followedUser.lastname.toLowerCase()}`;
+        return (name.indexOf(val.toLowerCase()) > -1);
+      });
+    } else {
+      this.filteredFollowedUsers = this.followedUsers;
+    }
+  }
+
+  public unfollowUser(userId: string): void {
+    if (!!this.currentUserId) {
+      this.RelationshipProvider.removeUser1FromUser2Realtionships(userId, this.currentUserId);
+    }
   }
 
   public openProfilePage(userId: string): void {

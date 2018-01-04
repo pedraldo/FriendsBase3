@@ -1,17 +1,18 @@
 <ion-header>
   <ion-navbar primary>
-      <button ion-button menuToggle icon-only>
-          <ion-icon name="menu"></ion-icon>
-      </button>
-      <ion-title>
-        Me suivent
-      </ion-title>
+    <button ion-button menuToggle icon-only>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>
+      Me suivent
+    </ion-title>
   </ion-navbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content>
+  <ion-searchbar #searchbar (ionInput)="getItems($event)"></ion-searchbar>
   <ion-list *ngIf="!!followerUsers.length">
-    <ion-item *ngFor="let followerUser of followerUsers">
+    <ion-item *ngFor="let followerUser of filteredFollowerUsers">
       <ion-avatar item-left (click)="openProfilePage(followerUser.id)">
         <img src="{{ followerUser.image }}">
       </ion-avatar>

@@ -15,9 +15,10 @@ export class FollowersTabPage {
   private currentUserId: string;
   public isCurrentUserProfile: boolean;
   public followerUsers: IUserMainInfo[];
+  public filteredFollowerUsers: IUserMainInfo[];
 
   constructor(
-    private NavController: NavController, 
+    private NavController: NavController,
     private NavParams: NavParams,
     private RelationshipProvider: RelationshipProvider,
     private AuthenticationProvider: AuthenticationProvider
@@ -34,14 +35,33 @@ export class FollowersTabPage {
 
   ngOnInit(): void {
     this.RelationshipProvider.getUserRelationshipsFollowers(this.userId).subscribe(followerUsers => {
-      let obsvArray: Observable<IUserMainInfo>[] = [];
-      _.forEach(followerUsers, (value, key) => {
-        obsvArray.push(this.AuthenticationProvider.getUserMainInformations(value.id));
-      });
-      Observable.forkJoin(obsvArray).subscribe(followerUsersData => {
-        this.followerUsers = followerUsersData;
-      });
+      if (!!followerUsers) {
+        let obsvArray: Observable<IUserMainInfo>[] = [];
+        _.forEach(followerUsers, (value, key) => {
+          obsvArray.push(this.AuthenticationProvider.getUserMainInformations(value.id));
+        });
+        Observable.forkJoin(obsvArray).subscribe(followerUsersData => {
+          this.followerUsers = followerUsersData;
+          this.filteredFollowerUsers = this.followerUsers;
+        });
+      } else {
+        this.followerUsers = [];
+        this.filteredFollowerUsers = [];
+      }
     });
+  }
+
+  public getItems(event: any) {
+    let val = event.target.value;
+
+    if (val && val.trim() != '' && val.length > 0) {
+      this.filteredFollowerUsers = this.followerUsers.filter((followerUser: IUserMainInfo) => {
+        let name = `${followerUser.firstname.toLowerCase()} ${followerUser.lastname.toLowerCase()}`;
+        return (name.indexOf(val.toLowerCase()) > -1);
+      });
+    } else {
+      this.filteredFollowerUsers = this.followerUsers;
+    }
   }
 
   public openProfilePage(userId: string): void {
