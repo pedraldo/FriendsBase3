@@ -29,16 +29,10 @@ export class GroupProvider {
 
     public getGroupUsers(groupId: string): Observable<IUserMainInfo[]> {
       return Observable.create(observer => {
-        this.DataProvider.list(`groups/${groupId}/users`).subscribe(groupUsersId => {
-          let obsvArray: Observable<IUserMainInfo>[] = [];
-          if (groupUsersId.length) {
-            groupUsersId.forEach(userId => {
-              obsvArray.push(this.AuthenticationProvider.getUserMainInformations(userId));
-            });
-            Observable.forkJoin(obsvArray).subscribe(groupUsers => {
-              observer.next(groupUsers);
-            });
-          } else if (groupUsersId === null){
+        this.DataProvider.list(`groups/${groupId}/users`).subscribe(groupUsers => {
+          if (!!groupUsers && groupUsers.length) {
+            observer.next(groupUsers);
+          } else if (groupUsers === null){
             observer.next([]);
           } else {
             observer.error();
@@ -53,19 +47,11 @@ export class GroupProvider {
 
     public getUserGroups(userId: string): Observable<IGroup[]> {
       return Observable.create(observer => {
-        this.DataProvider.list(`users/${userId}/groups`).subscribe(userGroupsId => {
-          if (userGroupsId) {
-            if (userGroupsId.length) {
-              let obsvArray: Observable<IPersistedGroup>[] = [];
-              userGroupsId.forEach(groupId => {
-                obsvArray.push(this.getGroupData(groupId));
-              });
-              Observable.forkJoin(obsvArray).subscribe(groupUsers => {
-                observer.next(groupUsers);
-              });
-            } else {
-              observer.next([]);
-            }
+        this.DataProvider.list(`users/${userId}/groups`).subscribe(userGroups => {
+          if (!!userGroups && userGroups.length) {
+            observer.next(userGroups);
+          } else if (userGroups === null){
+            observer.next([]);
           } else {
             observer.error();
           }
@@ -73,36 +59,73 @@ export class GroupProvider {
       });
     }
 
-    public createGroup(group: IGroup, userId: string): void {
-      if (group.name) {
-        group.users[userId] = userId;
-        group.superAdmin = userId;
-        this.DataProvider.push('groups', group).subscribe(groupId => {
-          let groupRef = {};
-          let idRef = {};
-          groupRef[groupId] = groupId;
-          idRef['id'] = groupId;
-          this.DataProvider.update(`users/${userId}/groups`, groupRef);
-          this.DataProvider.update(`groups/${groupId}`, idRef);
-        });
-      }
+    public createGroup(group: IGroup, userId: string): Promise<IGroup> {
+      return new Promise((resolve, reject) => {
+        if (!!group && !!group.name && !!userId) {
+          this.AuthenticationProvider.getUserMainInformations(userId).subscribe(userMainInfo => {
+            if (!!userMainInfo) {
+              group.users[userId] = userMainInfo;
+              group.superAdmin = userMainInfo.id;
+  
+              this.DataProvider.push('groups', group).subscribe(groupId => {
+                let groupRef = {};
+                groupRef[groupId] = {
+                  id: groupId,
+                  name: group.name,
+                  superAdmin: group.superAdmin
+                };
+                
+                Promise.all([
+                  this.DataProvider.update(`users/${userId}/groups`, groupRef),
+                  this.DataProvider.update(`groups/${groupId}`, {id: groupId})
+                ]).then(() => {
+                  resolve(group);
+                });
+              });
+            }
+          });
+        } else {
+          reject();
+        }
+      });
     }
 
     public removeGroup(groupId: string): Promise<void> {
-      return this.DataProvider.remove(`groups/${groupId}`);
+      return new Promise((resolve, reject) => {
+        this.DataProvider.list(`groups/${groupId}/users`).subscribe(groupUsers => {
+          let promArray: Promise<void>[] = [];
+  
+          groupUsers.forEach(groupUser => {
+            promArray.push(this.DataProvider.remove(`users/${groupUser.id}/groups/${groupId}`));
+          });
+
+          debugger;
+          Promise.all(promArray).then(() => {
+            debugger;
+            this.DataProvider.remove(`groups/${groupId}`).then(() => {
+              debugger;
+              resolve();
+            });
+          }).catch(error => {
+            reject(error);
+          });
+        });
+      });
     }
 
-    public addUserToGroup(userId: string, groupId: string): Promise<void[]> {
-      let groupRef = {};
-      let userRef = {};
-
-      groupRef[groupId] = groupId;
-      userRef[userId] = userId;
-
-      return Promise.all([
-        this.DataProvider.update(`groups/${groupId}/users`, userRef),
-        this.DataProvider.update(`users/${userId}/groups`, groupRef)
-      ]);
+    public addUserToGroup(userId: string, groupMainInfo: IGroupMainInfo): Promise<void> {
+      return new Promise((resolve, reject) => {
+        this.AuthenticationProvider.getUserMainInformations(userId).subscribe(userMainInfo => {
+          Promise.all([
+            this.DataProvider.update(`groups/${groupMainInfo.id}/users/${userId}`, userMainInfo),
+            this.DataProvider.update(`users/${userId}/groups`, groupMainInfo)
+          ]).then(() => {
+            resolve();
+          }).catch(error => {
+            reject(error);
+          });
+        });
+      });
     }
 
     public removeMemberFromGroup(userId: string, groupId: string): Promise<void[]> {
@@ -113,7 +136,15 @@ export class GroupProvider {
     }
 
     public isMemberSuperAdminOfGroup(userId: string, groupId: string): Promise<boolean> {
-      return this.getGroupData(groupId).toPromise().then(groupData => userId === groupData.superAdmin);
+      return new Promise((resolve, reject) => {
+        this.DataProvider.object(`groups/${groupId}/superAdmin`).subscribe(groupSuperAdminId => {
+          if (!!groupSuperAdminId) {
+            resolve(groupSuperAdminId === userId);
+          } else {
+            reject();
+          }
+        });
+      });
     }
 
     public updateGroupSuperAdmin(groupId: string, userId: string): Promise<void> {

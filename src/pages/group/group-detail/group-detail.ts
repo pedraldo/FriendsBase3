@@ -137,9 +137,14 @@ export class GroupDetailPage {
   }
 
   public acceptJoinRequest(userId: string, userFirstname: string, userLastname: string): void {
+    const groupMainInfo: IGroupMainInfo = {
+      id: this.group.id,
+      name: this.group.name,
+      superAdmin: this.group.superAdmin
+    };
     this.joinRequestUsers = this.joinRequestUsers.filter(joinRequestUser => joinRequestUser.id !== userId);
     this.GroupProvider.removeGroupJoinRequest(this.group.id, userId);
-    this.GroupProvider.addUserToGroup(userId, this.group.id).then(() => {
+    this.GroupProvider.addUserToGroup(userId, groupMainInfo).then(() => {
       let toast = this.ToastController.create({
         message: `${userFirstname} ${userLastname} vient d'être ajouté au groupe ${this.group.name}.`,
         duration: 4000
@@ -158,4 +163,24 @@ export class GroupDetailPage {
     toast.present();
   }
 
+  public removeGroup(): void {
+    this.AlertController.create({
+      title: 'Supprimer le groupe  ?',
+      message: `Etes vous sûr de vouloir supprimer le groupe ${this.group.name} ?`,
+      buttons: [
+        {
+          text: 'Oui',
+          handler: () => {
+            this.GroupProvider.removeGroup(this.group.id).then(() => {
+              this.NavController.pop();
+            });
+          }
+        },
+        {
+          text: 'Non',
+          role: 'cancel'
+        }
+      ]
+    }).present();
+  }
 }

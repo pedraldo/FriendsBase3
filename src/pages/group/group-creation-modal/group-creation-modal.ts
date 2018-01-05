@@ -21,10 +21,10 @@ export class GroupCreationModalPage {
       id: '',
       name: '',
       description: '',
-      users: {},
+      users: [],
       superAdmin: '',
       admins: [],
-      joinRequests: {},
+      joinRequests: [],
       joinInvitations: []
     };
 

@@ -49,7 +49,7 @@ export class ProfilePage {
       this.user = userData;
 
       _.forEach(this.user.groups, (value, key) => {
-        obsvArray.push(this.GroupProvider.getGroupData(value));
+        obsvArray.push(this.GroupProvider.getGroupData(value.id));
       });
       if (obsvArray.length) {
         Observable.forkJoin(obsvArray).subscribe(userGroups => {

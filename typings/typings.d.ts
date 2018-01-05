@@ -12,11 +12,17 @@ interface IGroup {
     id: string;
     name: string;
     description: string;
-    users: IRelationObject;
+    users: IUserMainInfo[];
     superAdmin: string;
     admins: string[];
-    joinRequests: IRelationObject;
+    joinRequests: string[];
     joinInvitations: string[];
+}
+
+interface IGroupMainInfo {
+    id: string;
+    name: string;
+    superAdmin: string;
 }
 
 interface IPersistedGroup extends IGroup, IPersistedResource { }

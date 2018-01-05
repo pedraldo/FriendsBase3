@@ -44,8 +44,13 @@ export class GroupInvitationPage {
   }
 
   public addUserToCurrentGroup(userId: string) {
+    const groupMainInfo: IGroupMainInfo = {
+      id: this.group.id,
+      name: this.group.name,
+      superAdmin: this.group.superAdmin
+    };
     this.isAddingInProgress = true;
-    this.GroupProvider.addUserToGroup(userId, this.group.id).then(() => {
+    this.GroupProvider.addUserToGroup(userId, groupMainInfo).then(() => {
       this.isMemberAdded = true;
       this.isAddingInProgress = false;
     });
