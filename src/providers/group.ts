@@ -61,6 +61,24 @@ export class GroupProvider {
     });
   }
 
+  public getGroupsByName(groupName: string): Observable<IGroup[]> {
+    return Observable.create(observer => {
+      this.DataProvider.ref('groups').orderByChild('name').equalTo(groupName).once('value').then(snapshot => {
+        if (snapshot.exists()) {
+          const groups = snapshot.val();
+          let groupArray: IGroup[] = [];
+          _.forEach(groups, group => {
+            groupArray.push(group);
+          });
+          observer.next(groupArray);
+        } else {
+          observer.next([])
+        }
+        observer.complete();
+      });
+    });
+  }
+
   public createGroup(group: IGroup, userId: string): Promise<IGroup> {
     return new Promise((resolve, reject) => {
       if (!!group && !!group.name && !!userId) {
@@ -97,11 +115,11 @@ export class GroupProvider {
       this.getGroupUsers(groupId).toPromise().then(groupUsers => {
         if (groupUsers && groupUsers.length) {
           let promArray: Promise<void>[] = [];
-          
+
           groupUsers.forEach(groupUser => {
             promArray.push(this.DataProvider.remove(`users/${groupUser.id}/groups/${groupId}`));
           });
-          
+
           Promise.all(promArray).then(() => {
             resolve();
           }).catch(error => {

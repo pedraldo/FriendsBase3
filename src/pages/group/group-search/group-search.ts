@@ -9,15 +9,18 @@ import { NavController, NavParams } from 'ionic-angular';
 })
 export class GroupSearchPage {
   public currentUserId: string;
-  public groups: IGroup[] = [];
-  public filteredGroups: IGroup[] = [];
+  public groupSearched: IGroup;
+  public groupNameSearched: string;
+  public foundGroups: IGroup[] = [];
+  public isGroupSearched: boolean = false;
+  public isGroupFound: boolean = false;
+  public isSearchInProgress: boolean = false;
 
   constructor(
     private NavController: NavController, 
     private NavParams: NavParams,
     private GroupProvider: GroupProvider
   ) {
-    this.getAllGroups();
     this.currentUserId = this.NavParams.data;
   }
 
@@ -25,22 +28,15 @@ export class GroupSearchPage {
     console.log('ionViewDidLoad GroupSearchPage');
   }
 
-  private getAllGroups(): void {
-    this.GroupProvider.getGroupList().subscribe((groups: IGroup[]) => {
-      this.groups = groups;
-    })
-  }
+  public getGroupByName(groupName: string): void {
+    this.isGroupSearched = true;
+    this.isSearchInProgress = true;
 
-  public getItems(event: any) {
-    let val = event.target.value;
-
-    if (val && val.trim() != '' && val.length > 2) {
-      this.filteredGroups = this.groups.filter((group: IGroup) => {
-        return (group.name.toLowerCase().indexOf(val.toLowerCase()) > -1);
-      });
-    } else {
-      this.filteredGroups = this.groups;
-    }
+    this.GroupProvider.getGroupsByName(this.groupNameSearched).subscribe(foundGroups => {
+      this.foundGroups = foundGroups;
+      this.isGroupFound = !!this.foundGroups.length;
+      this.isSearchInProgress = false;
+    });
   }
 
   public openGroupPage(group: IGroup): void {

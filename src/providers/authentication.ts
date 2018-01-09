@@ -96,10 +96,10 @@ export class AuthenticationProvider {
                     _.forEach(users, user => {
                         observer.next(user);
                     });
-                    observer.complete();
                 } else {
                     observer.next(null)
                 }
+                observer.complete();
             });
         });
     } 
