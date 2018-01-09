@@ -2,6 +2,8 @@ import { AngularFireDatabase } from 'angularfire2/database';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
+import firebase from 'firebase';
+
 @Injectable()
 export class DataProvider {
 	constructor(
@@ -34,5 +36,9 @@ export class DataProvider {
 
 	public remove(path: string): Promise<void> {
 		return this.AngularFireDatabase.object(path).remove();
+	}
+
+	public ref(path: string): firebase.database.Reference {
+		return this.AngularFireDatabase.database.ref(path);
 	}
 }

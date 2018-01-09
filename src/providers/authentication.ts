@@ -6,6 +6,7 @@ import { Platform } from 'ionic-angular';
 import { Observable } from 'rxjs/Observable';
 import { Facebook } from '@ionic-native/facebook';
 import firebase from 'firebase';
+import * as _ from 'lodash';
 
 import { DataProvider } from './data';
 
@@ -89,15 +90,17 @@ export class AuthenticationProvider {
 
     public getUserByEmail(email: string): Observable<IUser> {
         return Observable.create(observer => {
-            this.DataProvider.list('users').subscribe(users => {
-                if (!!users) {
-                    observer.next(users.find(user => user.profile.email === email));
-                } else if (users === null) {
-                    observer.next([]);
+            this.DataProvider.ref('users').orderByChild('email').equalTo(email).once('value').then(snapshot => {
+                if (snapshot.exists()) {
+                    const users = snapshot.val();
+                    _.forEach(users, user => {
+                        observer.next(user);
+                    });
+                    observer.complete();
                 } else {
-                    observer.error();
+                    observer.next(null)
                 }
-            })
+            });
         });
     } 
 
