@@ -36,7 +36,9 @@ export class AuthHomePage {
 
   public loginUserWithFacebook(): void {
     this.AuthenticationProvider.loginWithFacebook().subscribe(data => {
-      this.Storage.set('currentUserId', data.uid);
+      this.AuthenticationProvider.getUserMainInformations(data.uid).subscribe(userData => {
+        this.Storage.set('currentUserData', userData);
+      });
       this.NavController.setRoot(HomePage);
     }, error => {
       this.error = error;

@@ -1,7 +1,7 @@
 import { RelationshipTabsPage } from './../pages/relationship/relationship-tabs/relationship-tabs';
 import { ProfilePage } from './../pages/profile/profile';
 import { Storage } from '@ionic/storage';
-import { GroupListPage } from './../pages/group/group-list/group-list';
+// import { GroupListPage } from './../pages/group/group-list/group-list';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -75,19 +75,19 @@ export class MyApp {
   }
 
   public openGroupsPage(): void {
-    this.nav.setRoot(GroupListPage);
+    this.nav.setRoot('GroupsTabPage');
   }
 
   // public openListsPage(): void {
-  //   this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(ListListPage, [currentUserId, true]));
+  //   this.Storage.get('currentUserData').then(currentUserData => this.nav.setRoot(ListListPage, [currentUserData.id, true]));
   // }
 
   public openProfilePage(): void {
-    this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(ProfilePage, [currentUserId, true]));
+    this.Storage.get('currentUserData').then(currentUserData => this.nav.setRoot(ProfilePage, [JSON.parse(currentUserData).id, true]));
   }
 
   public openRelationshipsPage(): void {
-    this.Storage.get('currentUserId').then(currentUserId => this.nav.setRoot(RelationshipTabsPage, [currentUserId, true]));
+    this.Storage.get('currentUserData').then(currentUserData => this.nav.setRoot(RelationshipTabsPage, [JSON.parse(currentUserData).id, true]));
   }
 
   public logout(): void {

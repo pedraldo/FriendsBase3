@@ -146,7 +146,9 @@ export class AuthenticationProvider {
         return Observable.create(observer => {
             this.AngularFireAuth.auth.signInWithEmailAndPassword(email, password)
             .then((authenticationData) => {
-                this.Storage.set('currentUserId', authenticationData.uid);
+                this.getUserMainInformations(authenticationData.uid).subscribe(userData => {
+                    this.Storage.set('currentUserData', JSON.stringify(userData));
+                });
                 observer.next(authenticationData);
             }).catch((error) => {
                 observer.error(error);
@@ -195,6 +197,7 @@ export class AuthenticationProvider {
                         provider: 'facebook',
                         emailVerified: true
                     });
+                    this.Storage.set('currentUserFacebookId', facebookData.user.providerData[0].uid);
                     observer.next(facebookData.user);
                 }).catch(error => {
                     observer.error(error);
@@ -222,6 +225,7 @@ export class AuthenticationProvider {
 
     public logout(): Promise<void> {
         this.Storage.remove('currentUserId');
+        this.Storage.remove('currentUserName');
         this.Storage.remove('currentUserFacebookId');
         return this.AngularFireAuth.auth.signOut();
     }

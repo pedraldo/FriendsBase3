@@ -42,7 +42,7 @@
         <ion-spinner *ngIf="isSearchInProgress" name="crescent"></ion-spinner>
         <ion-item *ngFor="let group of foundGroups" (click)="openGroupPage(group)">
           <span item-left>{{ group.name }}</span>
-          <ion-icon item-right *ngIf="group.superAdmin === currentUserId" name="star"></ion-icon>
+          <ion-icon item-right *ngIf="group.superAdminId === currentUserId" name="star"></ion-icon>
           <ion-icon name="arrow-dropright" item-right></ion-icon>
         </ion-item>
         <ion-item *ngIf="isGroupSearched && !isGroupFound && !isSearchInProgress">

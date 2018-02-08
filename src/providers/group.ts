@@ -43,11 +43,15 @@ export class GroupProvider {
     });
   }
 
+  public getGroupSuperAdmin(groupId: string, superAdminId: string): Observable<IUserMainInfo> {
+    return this.DataProvider.object(`groups/${groupId}/users/${superAdminId}`);
+  }
+
   public getGroupList(): Observable<IGroup[]> {
     return this.DataProvider.list('groups');
   }
 
-  public getUserGroups(userId: string): Observable<IGroup[]> {
+  public getUserGroups(userId: string): Observable<IGroupMainInfo[]> {
     return Observable.create(observer => {
       this.DataProvider.list(`users/${userId}/groups`).subscribe(userGroups => {
         if (!!userGroups && userGroups.length) {
@@ -79,25 +83,39 @@ export class GroupProvider {
     });
   }
 
-  public createGroup(group: IGroup, userId: string): Promise<IGroup> {
+  public createGroup(groupName: string, groupDescription: string, userId: string): Promise<IGroup> {
+    let group: IGroup;
+    group.name = groupName;
+    group.profile.name = groupName;
+    group.description = groupDescription;
+
     return new Promise((resolve, reject) => {
-      if (!!group && !!group.name && !!userId) {
+      if (!!groupName && !!userId) {
         this.AuthenticationProvider.getUserMainInformations(userId).subscribe(userMainInfo => {
+          const userName = `${userMainInfo.firstname} ${userMainInfo.lastname}`;
           if (!!userMainInfo) {
             group.users[userId] = userMainInfo;
-            group.superAdmin = userMainInfo.id;
+            group.superAdminId = userMainInfo.id;
+            group.profile.superAdmin = {
+              id: userMainInfo.id,
+              name: userName
+            }
 
             this.DataProvider.push('groups', group).subscribe(groupId => {
               let groupRef = {};
               groupRef[groupId] = {
                 id: groupId,
-                name: group.name,
-                superAdmin: group.superAdmin
+                name: groupName,
+                superAdmin: {
+                  id: userMainInfo.id,
+                  name: userName
+                }
               };
 
               Promise.all([
                 this.DataProvider.update(`users/${userId}/groups`, groupRef),
-                this.DataProvider.update(`groups/${groupId}`, { id: groupId })
+                this.DataProvider.update(`groups/${groupId}`, { id: groupId }),
+                this.DataProvider.update(`groups/${groupId}/profile`, { id: groupId })
               ]).then(() => {
                 resolve(group);
               });
@@ -161,7 +179,7 @@ export class GroupProvider {
 
   public isMemberSuperAdminOfGroup(userId: string, groupId: string): Promise<boolean> {
     return new Promise((resolve, reject) => {
-      this.DataProvider.object(`groups/${groupId}/superAdmin`).subscribe(groupSuperAdminId => {
+      this.DataProvider.object(`groups/${groupId}/superAdminId`).subscribe(groupSuperAdminId => {
         if (!!groupSuperAdminId) {
           resolve(groupSuperAdminId === userId);
         } else {
@@ -171,39 +189,47 @@ export class GroupProvider {
     });
   }
 
-  public updateGroupSuperAdmin(groupId: string, userId: string): Promise<void> {
-    return this.DataProvider.update(`groups/${groupId}`, { superAdmin: userId });
+  public updateGroupSuperAdmin(groupId: string, userId: string): Promise<void[]> {
+    return Promise.all([
+      this.DataProvider.update(`groups/${groupId}`, { superAdminId: userId }),
+      this.DataProvider.update(`groups/${groupId}/profile/superAdmin`, { id: userId })
+    ]);
   }
 
-  public createNewGroupJoinRequest(groupId: string, userId: string): Promise<void> {
-    let userRef = {};
-    userRef[userId] = userId;
-    return this.DataProvider.update(`groups/${groupId}/joinRequests`, userRef);
+  public createNewGroupJoinRequest(groupMainInfo: IGroupMainInfo, userMainInfo: IUserMainInfo): Promise<void[]> {
+    return Promise.all([
+      this.DataProvider.update(`users/${userMainInfo.id}/groupJoinRequests/${groupMainInfo.id}`, groupMainInfo),
+      this.DataProvider.update(`groups/${groupMainInfo.id}/joinRequests/${userMainInfo.id}`, userMainInfo)
+    ]);
   }
 
-  public removeGroupJoinRequest(groupId: string, userId: string): Promise<void> {
-    return this.DataProvider.remove(`/groups/${groupId}/joinRequests/${userId}`);
+  public removeGroupJoinRequest(groupId: string, userId: string): Promise<void[]> {
+    return Promise.all([
+      this.DataProvider.remove(`groups/${groupId}/joinRequests/${userId}`),
+      this.DataProvider.remove(`users/${userId}/groupJoinRequests/${groupId}`)
+    ]);
   }
 
   public getGroupJoinRequestsUsers(groupId: string): Observable<IUserMainInfo[]> {
-    return Observable.create(observer => {
-      this.DataProvider.list(`groups/${groupId}/joinRequests`).subscribe(joinRequestsUserId => {
-        if (joinRequestsUserId) {
-          if (joinRequestsUserId.length) {
-            let obsvArray: Observable<IUserMainInfo>[] = [];
-            _.forEach(joinRequestsUserId, joinRequestUserId => {
-              obsvArray.push(this.AuthenticationProvider.getUserMainInformations(joinRequestUserId));
-            });
-            Observable.forkJoin(obsvArray).subscribe(joinRequestUsers => {
-              observer.next(joinRequestUsers);
-            });
-          } else {
-            observer.next([]);
-          }
-        } else {
-          observer.error();
-        }
-      })
-    });
+    return this.DataProvider.list(`groups/${groupId}/joinRequests`);
+    // return Observable.create(observer => {
+    //   this.DataProvider.list(`groups/${groupId}/joinRequests`).subscribe(joinRequestsUserId => {
+    //     if (joinRequestsUserId) {
+    //       if (joinRequestsUserId.length) {
+    //         let obsvArray: Observable<IUserMainInfo>[] = [];
+    //         _.forEach(joinRequestsUserId, joinRequestUserId => {
+    //           obsvArray.push(this.AuthenticationProvider.getUserMainInformations(joinRequestUserId));
+    //         });
+    //         Observable.forkJoin(obsvArray).subscribe(joinRequestUsers => {
+    //           observer.next(joinRequestUsers);
+    //         });
+    //       } else {
+    //         observer.next([]);
+    //       }
+    //     } else {
+    //       observer.error();
+    //     }
+    //   })
+    // });
   }
 }

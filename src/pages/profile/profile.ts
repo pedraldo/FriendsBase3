@@ -77,8 +77,8 @@ export class ProfilePage {
             });
           }
         } else {
-          this.Storage.get('currentUserId').then(currentUserId => {
-            this.currentUserId = currentUserId;
+          this.Storage.get('currentUserData').then(currentUserData => {
+            this.currentUserId = JSON.parse(currentUserData).id;
             this.RelationshipProvider.isUser1FollowerOfUser2(this.currentUserId, this.user.id).subscribe(isCurrentUserRelationship => {
               this.isCurrentUserRelationship = isCurrentUserRelationship;
             })

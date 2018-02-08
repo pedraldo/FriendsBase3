@@ -11,7 +11,7 @@ import { GroupSearchPage } from '../group-search/group-search';
   templateUrl: 'group-list.html',
 })
 export class GroupListPage {
-  public groups: IGroup[] = [];
+  public groups: IGroupMainInfo[] = [];
   public currentUserId: string;
   public loader: Loading;
 
@@ -26,9 +26,9 @@ export class GroupListPage {
       spinner: 'crescent'
     });
     this.loader.present();
-    this.Storage.get('currentUserId').then(currentUserId => {
-      this.currentUserId = currentUserId;
-      this.GroupProvider.getUserGroups(currentUserId).subscribe(currentUserGroups => {
+    this.Storage.get('currentUserData').then(currentUserData => {
+      this.currentUserId = JSON.parse(currentUserData).id;
+      this.GroupProvider.getUserGroups(this.currentUserId).subscribe(currentUserGroups => {
         this.groups = currentUserGroups;
         this.loader.dismiss();
       });

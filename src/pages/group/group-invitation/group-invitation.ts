@@ -43,14 +43,17 @@ export class GroupInvitationPage {
     });
   }
 
-  public addUserToCurrentGroup(userId: string) {
+  public addUserToCurrentGroup() {
     const groupMainInfo: IGroupMainInfo = {
       id: this.group.id,
       name: this.group.name,
-      superAdmin: this.group.superAdmin
+      superAdmin: {
+        id: this.group.superAdminId,
+        name: this.memberFound.name
+      }
     };
     this.isAddingInProgress = true;
-    this.GroupProvider.addUserToGroup(userId, groupMainInfo).then(() => {
+    this.GroupProvider.addUserToGroup(this.memberFound.id, groupMainInfo).then(() => {
       this.isMemberAdded = true;
       this.isAddingInProgress = false;
     });

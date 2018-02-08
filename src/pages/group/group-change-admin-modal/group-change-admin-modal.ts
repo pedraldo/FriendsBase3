@@ -28,8 +28,8 @@ export class GroupChangeAdminModalPage {
   }
 
   ngOnInit(): void {
-    this.Storage.get('currentUserId').then(currentUserId => {
-      this.groupUsers = this.NavParams.data.groupUsers.filter(user => user.id !== currentUserId);
+    this.Storage.get('currentUserData').then(currentUserData => {
+      this.groupUsers = this.NavParams.data.groupUsers.filter(user => user.id !== JSON.parse(currentUserData).id);
     });
   }
 

@@ -36,7 +36,7 @@
             <h2>{{groupUser.firstname}} {{groupUser.lastname}}</h2>
             <p>{{groupUser.email}}</p>
           </div>
-          <ion-icon item-right name="star" *ngIf="groupUser.id === group.superAdmin"></ion-icon>
+          <ion-icon item-right name="star" *ngIf="groupUser.id === group.superAdminId"></ion-icon>
           <button item-right ion-button outline color="danger" *ngIf="currentUserId !== groupUser.id && isCurrentUserSuperAdmin"
             (click)="removeMemberFromCurrentGroup(groupUser, group)">
             <ion-icon name="close"></ion-icon>

@@ -13,16 +13,20 @@ interface IGroup {
     name: string;
     description: string;
     users: IUserMainInfo[];
-    superAdmin: string;
+    superAdminId: string;
     admins: string[];
     joinRequests: string[];
     joinInvitations: string[];
+    profile: IGroupMainInfo;
 }
 
 interface IGroupMainInfo {
     id: string;
     name: string;
-    superAdmin: string;
+    superAdmin: {
+        id: string;
+        name: string;
+    }
 }
 
 interface IPersistedGroup extends IGroup, IPersistedResource { }

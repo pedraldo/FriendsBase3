@@ -14,7 +14,7 @@ export class GroupDetailPage {
   public group: IGroup;
   public groupUsers: IUserMainInfo[];
   public joinRequestUsers: IUserMainInfo[] = [];
-  public currentUser: IUser;
+  public currentUserMainInfo: IUserMainInfo;
   public superAdminUser: IUserMainInfo;
   public currentUserId = '';
   public isCurrentUserSuperAdmin = false;
@@ -44,11 +44,12 @@ export class GroupDetailPage {
     this.GroupProvider.getGroupUsers(this.group.id).subscribe(groupUsers => {
       this.groupUsers = groupUsers;
       
-      this.Storage.get('currentUserId').then(currentUserId => {
-        this.currentUserId = currentUserId;
+      this.Storage.get('currentUserData').then(currentUserData => {
+        this.currentUserMainInfo = JSON.parse(currentUserData);
+        this.currentUserId = this.currentUserMainInfo.id;
         this.isCurrentUserMemberOfGroup = !!this.groupUsers.find(groupUser => groupUser.id === this.currentUserId);
-        this.isCurrentUserSuperAdmin = this.isCurrentUserMemberOfGroup ? this.currentUserId === this.group.superAdmin : false;
-        this.superAdminUser = this.groupUsers.find(groupUser => groupUser.id === this.group.superAdmin);
+        this.isCurrentUserSuperAdmin = this.isCurrentUserMemberOfGroup ? this.currentUserId === this.group.superAdminId : false;
+        this.superAdminUser = this.groupUsers.find(groupUser => groupUser.id === this.group.superAdminId);
         
         this.areGroupUsersLoaded = true;
   
@@ -120,8 +121,8 @@ export class GroupDetailPage {
     modal.present();
     modal.onDidDismiss(newAdminId => {
       if (!!newAdminId) {
-        this.group.superAdmin = newAdminId;
-        this.isCurrentUserSuperAdmin = this.currentUserId=== this.group.superAdmin;
+        this.group.superAdminId = newAdminId;
+        this.isCurrentUserSuperAdmin = this.currentUserId === this.group.superAdminId;
         if (this.isRemovingCurrentUserFromGroup) {
           this.GroupProvider.removeMemberFromGroup(this.currentUserId, this.group.id);
         }
@@ -132,7 +133,7 @@ export class GroupDetailPage {
   public sendGroupJoinRequest(): void {
     this.hasCurrentUserAlreadyMadeJoinRequest = true;
     if (!this.isCurrentUserMemberOfGroup) {
-      this.GroupProvider.createNewGroupJoinRequest(this.group.id, this.currentUserId)
+      this.GroupProvider.createNewGroupJoinRequest(this.group.profile, this.currentUserMainInfo);
     }
   }
 
@@ -140,7 +141,10 @@ export class GroupDetailPage {
     const groupMainInfo: IGroupMainInfo = {
       id: this.group.id,
       name: this.group.name,
-      superAdmin: this.group.superAdmin
+      superAdmin: {
+        id: this.group.superAdminId,
+        name: `${userFirstname} ${userLastname}`
+      }
     };
     this.joinRequestUsers = this.joinRequestUsers.filter(joinRequestUser => joinRequestUser.id !== userId);
     this.GroupProvider.removeGroupJoinRequest(this.group.id, userId);

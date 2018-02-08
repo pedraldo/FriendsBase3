@@ -9,7 +9,8 @@ import { Storage } from '@ionic/storage';
   templateUrl: 'group-creation-modal.html',
 })
 export class GroupCreationModalPage {
-  public group: IGroup;
+  public groupName: string;
+  public groupDescription: string;
   public currentUserId: string;
 
   constructor(
@@ -17,19 +18,11 @@ export class GroupCreationModalPage {
     private Storage: Storage,
     private ViewController: ViewController
   ) {
-    this.group = {
-      id: '',
-      name: '',
-      description: '',
-      users: [],
-      superAdmin: '',
-      admins: [],
-      joinRequests: [],
-      joinInvitations: []
-    };
+    this.groupName = '';
+    this.groupDescription = '';
 
-    this.Storage.get('currentUserId').then(currentUserId => {
-      this.currentUserId = currentUserId;
+    this.Storage.get('currentUserData').then(currentUserData => {
+      this.currentUserId = JSON.parse(currentUserData).id;
     });
   }
 
@@ -38,7 +31,7 @@ export class GroupCreationModalPage {
   }
 
   public createGroup(): void {
-    this.GroupProvider.createGroup(this.group, this.currentUserId);
+    this.GroupProvider.createGroup(this.groupName, this.groupDescription, this.currentUserId);
     this.dismiss();
   }
 
