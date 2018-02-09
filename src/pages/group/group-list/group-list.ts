@@ -4,7 +4,6 @@ import { Component } from '@angular/core';
 import { Loading, LoadingController, ModalController, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { GroupDetailPage } from '../group-detail/group-detail';
-import { GroupSearchPage } from '../group-search/group-search';
 
 @Component({
   selector: 'page-group-list',
@@ -49,7 +48,7 @@ export class GroupListPage {
   }
 
   public openGroupSearchPage(): void {
-    this.NavController.push(GroupSearchPage, this.currentUserId);
+    this.NavController.push('GroupSearchTabPage', this.currentUserId);
   }
 
 }

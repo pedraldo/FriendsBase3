@@ -6,14 +6,6 @@ import { Component } from '@angular/core';
 import { Loading, LoadingController, ModalController, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { GroupDetailPage } from '../group-detail/group-detail';
-import { GroupSearchPage } from '../group-search/group-search';
-
-/**
- * Generated class for the GroupsTabPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -54,11 +46,11 @@ export class GroupsTabPage {
     modal.present();
   }
 
-  public openGroupDetailPage(group: IGroup): void {
-    this.NavController.push(GroupDetailPage, group);
+  public openGroupDetailPage(groupId: string): void {
+    this.NavController.push(GroupDetailPage, groupId);
   }
 
   public openGroupSearchPage(): void {
-    this.NavController.push(GroupSearchPage, this.currentUserId);
+    this.NavController.push('GroupSearchTabPage', this.currentUserId);
   }
 }

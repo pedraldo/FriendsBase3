@@ -40,7 +40,7 @@
     <ion-card-content>
       <ion-list>
         <ion-spinner *ngIf="isSearchInProgress" name="crescent"></ion-spinner>
-        <ion-item *ngFor="let group of foundGroups" (click)="openGroupPage(group)">
+        <ion-item *ngFor="let group of foundGroups" (click)="openGroupPage(group.id)">
           <span item-left>{{ group.name }}</span>
           <ion-icon item-right *ngIf="group.superAdminId === currentUserId" name="star"></ion-icon>
           <ion-icon name="arrow-dropright" item-right></ion-icon>

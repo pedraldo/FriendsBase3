@@ -1,10 +1,11 @@
+import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 import { Storage } from '@ionic/storage';
 import { ProfilePage } from './../../profile/profile';
 import { GroupInvitationPage } from './../group-invitation/group-invitation';
 import { GroupChangeAdminModalPage } from './../group-change-admin-modal/group-change-admin-modal';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
-import { AlertController, ModalController, NavController, NavParams, ToastController } from 'ionic-angular';
+import { AlertController, ModalController, NavController, NavParams, ToastController, Loading } from 'ionic-angular';
 
 @Component({
   selector: 'page-group-detail',
@@ -21,8 +22,11 @@ export class GroupDetailPage {
   public isCurrentUserMemberOfGroup = false;
   public areGroupUsersLoaded = false;
   public hasCurrentUserAlreadyMadeJoinRequest = false;
-
+  public allGroupDataHasBeenCharged = false;
+  public loader: Loading;
+  
   private isRemovingCurrentUserFromGroup = false;
+  private groupId: string;
 
   constructor(
     private NavController: NavController, 
@@ -31,9 +35,14 @@ export class GroupDetailPage {
     private AlertController: AlertController,
     private ModalController: ModalController,
     private ToastController: ToastController,
+    private LoadingController: LoadingController,
     private Storage: Storage
   ) {
-    this.group = this.NavParams.data;
+    this.loader = this.LoadingController.create({
+      spinner: 'crescent'
+    });
+    this.loader.present();
+    this.groupId = this.NavParams.data;
   }
 
   ionViewDidLoad() {
@@ -41,8 +50,9 @@ export class GroupDetailPage {
   }
 
   ngOnInit(): void {
-    this.GroupProvider.getGroupUsers(this.group.id).subscribe(groupUsers => {
-      this.groupUsers = groupUsers;
+    this.GroupProvider.getGroupData(this.groupId).subscribe(groupData => {
+      this.group = groupData;
+      this.groupUsers = Object.values(this.group.users); // tslint:disable-line
       
       this.Storage.get('currentUserData').then(currentUserData => {
         this.currentUserMainInfo = JSON.parse(currentUserData);
@@ -50,12 +60,13 @@ export class GroupDetailPage {
         this.isCurrentUserMemberOfGroup = !!this.groupUsers.find(groupUser => groupUser.id === this.currentUserId);
         this.isCurrentUserSuperAdmin = this.isCurrentUserMemberOfGroup ? this.currentUserId === this.group.superAdminId : false;
         this.superAdminUser = this.groupUsers.find(groupUser => groupUser.id === this.group.superAdminId);
-        
         this.areGroupUsersLoaded = true;
   
         this.GroupProvider.getGroupJoinRequestsUsers(this.group.id).subscribe(joinRequestsUsers => {
           this.joinRequestUsers = joinRequestsUsers;
           this.hasCurrentUserAlreadyMadeJoinRequest = !!this.isCurrentUserMemberOfGroup ? false : !!this.joinRequestUsers.find(joinRequestsUser => joinRequestsUser.id === this.currentUserId);
+          this.allGroupDataHasBeenCharged = true;
+          this.loader.dismiss();
         });
       });
     });

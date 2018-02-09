@@ -1,7 +1,6 @@
 import { RelationshipTabsPage } from './../pages/relationship/relationship-tabs/relationship-tabs';
 import { ProfilePage } from './../pages/profile/profile';
 import { Storage } from '@ionic/storage';
-// import { GroupListPage } from './../pages/group/group-list/group-list';
 import { Component, ViewChild } from '@angular/core';
 import { Nav, Platform } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
@@ -75,7 +74,7 @@ export class MyApp {
   }
 
   public openGroupsPage(): void {
-    this.nav.setRoot('GroupsTabPage');
+    this.nav.setRoot('GroupTabsPage');
   }
 
   // public openListsPage(): void {

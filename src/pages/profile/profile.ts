@@ -49,7 +49,7 @@ export class ProfilePage {
       this.user = userData;
 
       _.forEach(this.user.groups, (value, key) => {
-        obsvArray.push(this.GroupProvider.getGroupData(value.id));
+        obsvArray.push(this.GroupProvider.getGroupMainInformations(value.id));
       });
       if (obsvArray.length) {
         Observable.forkJoin(obsvArray).subscribe(userGroups => {
@@ -88,8 +88,8 @@ export class ProfilePage {
     });
   }
 
-  public openGroupPage(group: IGroup): void {
-    this.NavController.push(GroupDetailPage, group);
+  public openGroupPage(groupId: string): void {
+    this.NavController.push(GroupDetailPage, groupId);
   }
 
   public addUserToRelationships(userId: string): Promise<void> {

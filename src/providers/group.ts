@@ -14,11 +14,24 @@ export class GroupProvider {
 
   }
 
-  public getGroupData(groupId: string): Observable<IPersistedGroup> {
+  public getGroupData(groupId: string): Observable<IGroup> {
     return Observable.create(observer => {
       this.DataProvider.object(`groups/${groupId}`).subscribe(groupData => {
         if (!!groupData) {
           observer.next(groupData);
+          observer.complete();
+        } else {
+          observer.error();
+        }
+      });
+    });
+  }
+
+  public getGroupMainInformations(groupId: string): Observable<IGroup> {
+    return Observable.create(observer => {
+      this.DataProvider.object(`groups/${groupId}/profile`).subscribe(groupMainInfo => {
+        if (!!groupMainInfo) {
+          observer.next(groupMainInfo);
           observer.complete();
         } else {
           observer.error();

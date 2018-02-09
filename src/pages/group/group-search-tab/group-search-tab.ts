@@ -1,13 +1,14 @@
 import { GroupDetailPage } from './../group-detail/group-detail';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
-import { NavController, NavParams } from 'ionic-angular';
+import { NavController, NavParams, IonicPage } from 'ionic-angular';
 
+@IonicPage()
 @Component({
-  selector: 'page-group-search',
-  templateUrl: 'group-search.html',
+  selector: 'page-group-searc-tab',
+  templateUrl: 'group-search-tab.html',
 })
-export class GroupSearchPage {
+export class GroupSearchTabPage {
   public currentUserId: string;
   public groupSearched: IGroup;
   public groupNameSearched: string;
@@ -25,7 +26,7 @@ export class GroupSearchPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad GroupSearchPage');
+    console.log('ionViewDidLoad GroupSearchTabPage');
   }
 
   public getGroupByName(groupName: string): void {
@@ -39,7 +40,7 @@ export class GroupSearchPage {
     });
   }
 
-  public openGroupPage(group: IGroup): void {
-    this.NavController.push(GroupDetailPage, group);
+  public openGroupPage(groupId: string): void {
+    this.NavController.push(GroupDetailPage, groupId);
   }
 }

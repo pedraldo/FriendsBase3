@@ -23,7 +23,7 @@
       <ion-card-content>
           <ion-card-title>Groupes</ion-card-title>
           <ion-list>
-              <ion-item *ngFor="let userGroup of userGroups" (click)="openGroupPage(userGroup)">
+              <ion-item *ngFor="let userGroup of userGroups" (click)="openGroupPage(userGroup.id)">
                   <ion-label item-left>{{ userGroup.name }}</ion-label>
                   <ion-icon name="arrow-dropright" item-right></ion-icon>
               </ion-item>

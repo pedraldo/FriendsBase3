@@ -18,16 +18,18 @@ import { AuthHomePage } from './../pages/authentication/auth-home/auth-home';
 import { SignUpPage } from './../pages/authentication/sign-up/sign-up';
 import { LoginEmailPage } from './../pages/authentication/login-email/login-email';
 import { ForgotPasswordPage } from '../pages/authentication/forgot-password/forgot-password';
-import { GroupListPage } from './../pages/group/group-list/group-list';
+// import { GroupListPage } from './../pages/group/group-list/group-list';
 import { GroupCreationModalPage } from './../pages/group/group-creation-modal/group-creation-modal';
 import { GroupDetailPage } from './../pages/group/group-detail/group-detail';
-import { GroupSearchPage } from './../pages/group/group-search/group-search';
 import { GroupChangeAdminModalPage } from './../pages/group/group-change-admin-modal/group-change-admin-modal';
 import { GroupInvitationPage } from '../pages/group/group-invitation/group-invitation';
 import { ProfilePage } from './../pages/profile/profile';
 import { FollowersTabPage } from './../pages/relationship/followers-tab/followers-tab';
 import { FollowedTabPage } from './../pages/relationship/followed-tab/followed-tab';
 import { SearchPeopleTabPage } from './../pages/relationship/search-people-tab/search-people-tab';
+
+
+import { GroupTabsPageModule } from '../pages/group/group-tabs/group-tabs.module';
 
 // Providers
 import { AuthenticationProvider } from '../providers/authentication';
@@ -56,10 +58,8 @@ export const firebaseConfig = {
     SignUpPage,
     LoginEmailPage,
     ForgotPasswordPage,
-    GroupListPage,
     GroupCreationModalPage,
     GroupDetailPage,
-    GroupSearchPage,
     GroupChangeAdminModalPage,
     GroupInvitationPage,
     ProfilePage,
@@ -75,6 +75,7 @@ export const firebaseConfig = {
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
+    GroupTabsPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -85,10 +86,8 @@ export const firebaseConfig = {
     SignUpPage,
     LoginEmailPage,
     ForgotPasswordPage,
-    GroupListPage,
     GroupCreationModalPage,
     GroupDetailPage,
-    GroupSearchPage,
     GroupChangeAdminModalPage,
     GroupInvitationPage,
     ProfilePage,

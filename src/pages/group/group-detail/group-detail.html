@@ -3,31 +3,31 @@
     <button ion-button menuToggle icon-only>
       <ion-icon name='menu'></ion-icon>
     </button>
-    <ion-title>
+    <ion-title *ngIf="allGroupDataHasBeenCharged">
       {{group.name}}
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content>
-  <ion-card *ngIf="!isCurrentUserMemberOfGroup">
+  <ion-card *ngIf="allGroupDataHasBeenCharged && !isCurrentUserMemberOfGroup">
     <ion-card-header>
-      <ion-label>A propos du groupe {{ group.name }}</ion-label>
+      <ion-label *ngIf="allGroupDataHasBeenCharged">A propos du groupe {{ group.name }}</ion-label>
     </ion-card-header>
     <ion-card-content>
       <p>{{ group.description }}</p>
     </ion-card-content>
   </ion-card>
-  <ion-card>
+  <ion-card *ngIf="allGroupDataHasBeenCharged">
     <ion-card-header>
       <ion-item>
-        <ion-label item-left *ngIf="isCurrentUserMemberOfGroup">Membres</ion-label>
-        <ion-label item-left *ngIf="!isCurrentUserMemberOfGroup">Administrateur</ion-label>
+        <ion-label item-left *ngIf="allGroupDataHasBeenCharged && isCurrentUserMemberOfGroup">Membres</ion-label>
+        <ion-label item-left *ngIf="allGroupDataHasBeenCharged && !isCurrentUserMemberOfGroup">Administrateur</ion-label>
         <ion-icon item-right name="add" *ngIf="isCurrentUserMemberOfGroup && isCurrentUserSuperAdmin" (click)="openGroupInvitationPage(group)"></ion-icon>
       </ion-item>
     </ion-card-header>
     <ion-card-content>
-      <ion-list *ngIf="areGroupUsersLoaded && isCurrentUserMemberOfGroup">
+      <ion-list *ngIf="areGroupUsersLoaded && isCurrentUserMemberOfGroup && !!groupUsers">
         <ion-item *ngFor="let groupUser of groupUsers">
           <ion-avatar item-left (click)="openProfilePage(groupUser.id)">
             <img src="{{groupUser.image}}">
@@ -43,7 +43,7 @@
           </button>
         </ion-item>
       </ion-list>
-      <ion-list *ngIf="areGroupUsersLoaded && !isCurrentUserMemberOfGroup">
+      <ion-list *ngIf="areGroupUsersLoaded && !isCurrentUserMemberOfGroup && !!superAdminUser">
         <ion-item>
           <ion-avatar item-left>
             <img src="{{superAdminUser.image}}">
@@ -74,9 +74,11 @@
       </ion-list>
     </ion-card-content>
   </ion-card>
-  <button *ngIf="isCurrentUserSuperAdmin" block ion-button color="warning" (click)="changeGroupSuperAdmin()">Désigner un nouvel admin</button>
-  <button *ngIf="!isCurrentUserMemberOfGroup" block ion-button color="warning" (click)="sendGroupJoinRequest()" [disabled]="hasCurrentUserAlreadyMadeJoinRequest">Intégrer le groupe</button>
-  <p padding *ngIf="hasCurrentUserAlreadyMadeJoinRequest && !isCurrentUserMemberOfGroup">Vous serez intégré au groupe dès l'accord de son administrateur</p>
-  <button block ion-button color="danger" (click)="leaveGroup()" *ngIf="isCurrentUserMemberOfGroup">Quitter le groupe</button>
-  <button block ion-button color="danger" (click)="removeGroup()" *ngIf="isCurrentUserMemberOfGroup">Supprimer le groupe</button>
+  <div *ngIf="allGroupDataHasBeenCharged">
+    <button *ngIf="isCurrentUserSuperAdmin" block ion-button color="warning" (click)="changeGroupSuperAdmin()">Désigner un nouvel admin</button>
+    <button *ngIf="!isCurrentUserMemberOfGroup" block ion-button color="warning" (click)="sendGroupJoinRequest()" [disabled]="hasCurrentUserAlreadyMadeJoinRequest">Intégrer le groupe</button>
+    <p padding *ngIf="hasCurrentUserAlreadyMadeJoinRequest && !isCurrentUserMemberOfGroup">Vous serez intégré au groupe dès l'accord de son administrateur</p>
+    <button block ion-button color="danger" (click)="leaveGroup()" *ngIf="isCurrentUserMemberOfGroup">Quitter le groupe</button>
+    <button block ion-button color="danger" (click)="removeGroup()" *ngIf="isCurrentUserSuperAdmin">Supprimer le groupe</button>
+  </div>
 </ion-content>
