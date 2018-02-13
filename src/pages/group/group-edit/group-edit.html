@@ -1,0 +1,24 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>{{ group.name }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+  <form (ngSubmit)="updateGroupInfo()" #updateGroupForm="ngForm">
+    <ion-list>
+      <ion-item>
+        <ion-input required type="text" placeholder="Nom" [(ngModel)]="group.name" name="name" minlength="3"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-textarea placeholder="Description" [(ngModel)]="group.description" name="description"></ion-textarea>
+      </ion-item>
+    </ion-list>
+
+    <button ion-button block [disabled]="!updateGroupForm.form.valid || (group.name === groupInDatabase.name && group.description === groupInDatabase.description)">Valider les changements</button>
+  </form>
+</ion-content>
