@@ -6,6 +6,11 @@
     <ion-title *ngIf="allGroupDataHasBeenCharged">
       {{group.name}}
     </ion-title>
+    <ion-buttons end>
+      <button ion-button icon-only color="default" (click)="openGroupEditPage(group)">
+        <ion-icon name="create"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 </ion-header>
 

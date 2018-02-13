@@ -1,9 +1,10 @@
-import { ViewController } from 'ionic-angular';
+import { ViewController, IonicPage } from 'ionic-angular';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
 import { Storage } from '@ionic/storage';
 
 
+@IonicPage()
 @Component({
   selector: 'page-group-creation-modal',
   templateUrl: 'group-creation-modal.html',
@@ -22,7 +23,7 @@ export class GroupCreationModalPage {
     this.groupDescription = '';
 
     this.Storage.get('currentUserData').then(currentUserData => {
-      this.currentUserId = JSON.parse(currentUserData).id;
+      this.currentUserId = currentUserData.id;
     });
   }
 

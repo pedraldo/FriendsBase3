@@ -141,6 +141,20 @@ export class GroupProvider {
     });
   }
 
+  public updateGroup(groupId: string, groupEditableInfo: IEditableGroupInfo): Promise<void[]> {
+    let updatePromisesArray = [];
+    _.forEach(groupEditableInfo, (value, key) => {
+      let ref = {};
+      ref[key] = value;
+      updatePromisesArray.push(this.DataProvider.update(`groups/${groupId}`, ref));
+      if (key === 'name') {
+        updatePromisesArray.push(this.DataProvider.update(`groups/${groupId}/profile`, ref));
+      }
+    });
+
+    return Promise.all(updatePromisesArray);
+  }
+
   private removeAllGroupMembers(groupId: string): Promise<void> {
     return new Promise((resolve, reject) => {
       this.getGroupUsers(groupId).toPromise().then(groupUsers => {

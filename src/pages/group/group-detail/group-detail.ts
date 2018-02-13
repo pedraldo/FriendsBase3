@@ -1,12 +1,12 @@
 import { LoadingController } from 'ionic-angular/components/loading/loading-controller';
 import { Storage } from '@ionic/storage';
 import { ProfilePage } from './../../profile/profile';
-import { GroupInvitationPage } from './../group-invitation/group-invitation';
-import { GroupChangeAdminModalPage } from './../group-change-admin-modal/group-change-admin-modal';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
-import { AlertController, ModalController, NavController, NavParams, ToastController, Loading } from 'ionic-angular';
+import { AlertController, ModalController, NavController, NavParams, ToastController, Loading, IonicPage } from 'ionic-angular';
+import { Events } from 'ionic-angular/util/events';
 
+@IonicPage()
 @Component({
   selector: 'page-group-detail',
   templateUrl: 'group-detail.html',
@@ -36,7 +36,8 @@ export class GroupDetailPage {
     private ModalController: ModalController,
     private ToastController: ToastController,
     private LoadingController: LoadingController,
-    private Storage: Storage
+    private Storage: Storage,
+    private Events: Events
   ) {
     this.loader = this.LoadingController.create({
       spinner: 'crescent'
@@ -51,17 +52,17 @@ export class GroupDetailPage {
 
   ngOnInit(): void {
     this.GroupProvider.getGroupData(this.groupId).subscribe(groupData => {
-      this.group = groupData;
-      this.groupUsers = Object.values(this.group.users); // tslint:disable-line
-      
+      this.group = groupData; 
+      /* tslint:disable */ this.groupUsers = Object.values(this.group.users); // tslint:enable
+    
       this.Storage.get('currentUserData').then(currentUserData => {
-        this.currentUserMainInfo = JSON.parse(currentUserData);
+        this.currentUserMainInfo = currentUserData;
         this.currentUserId = this.currentUserMainInfo.id;
         this.isCurrentUserMemberOfGroup = !!this.groupUsers.find(groupUser => groupUser.id === this.currentUserId);
         this.isCurrentUserSuperAdmin = this.isCurrentUserMemberOfGroup ? this.currentUserId === this.group.superAdminId : false;
         this.superAdminUser = this.groupUsers.find(groupUser => groupUser.id === this.group.superAdminId);
         this.areGroupUsersLoaded = true;
-  
+        
         this.GroupProvider.getGroupJoinRequestsUsers(this.group.id).subscribe(joinRequestsUsers => {
           this.joinRequestUsers = joinRequestsUsers;
           this.hasCurrentUserAlreadyMadeJoinRequest = !!this.isCurrentUserMemberOfGroup ? false : !!this.joinRequestUsers.find(joinRequestsUser => joinRequestsUser.id === this.currentUserId);
@@ -69,15 +70,25 @@ export class GroupDetailPage {
           this.loader.dismiss();
         });
       });
+      
+      // Subscribe group:update events from GroupEditPage
+      this.Events.subscribe(`group-${this.group.id}:updated`, group => {
+        this.group = Object.assign(this.group, group);
+      });
     });
+
   }
 
   public openGroupInvitationPage(group: IGroup): void {
-    this.NavController.push(GroupInvitationPage, group);
+    this.NavController.push('GroupInvitationPage', group);
   }
 
   public openProfilePage(userId: string): void {
     this.NavController.push(ProfilePage, [userId, userId === this.currentUserId]);
+  }
+
+  public openGroupEditPage(group: IGroup): void {
+    this.NavController.push('GroupEditPage', group);
   }
 
   public removeMemberFromCurrentGroup(user: IUserMainInfo, group: IGroup) {
@@ -128,7 +139,7 @@ export class GroupDetailPage {
   }
 
   public changeGroupSuperAdmin(): void {
-    let modal = this.ModalController.create(GroupChangeAdminModalPage, { group: this.group, groupUsers: this.groupUsers });
+    let modal = this.ModalController.create('GroupChangeAdminModalPage', { group: this.group, groupUsers: this.groupUsers });
     modal.present();
     modal.onDidDismiss(newAdminId => {
       if (!!newAdminId) {

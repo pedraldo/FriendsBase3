@@ -1,5 +1,4 @@
 import { RelationshipProvider } from './../../providers/relationship';
-import { GroupDetailPage } from './../group/group-detail/group-detail';
 import { Observable } from 'rxjs/Observable';
 import { GroupProvider } from '../../providers/group';
 import { AuthenticationProvider } from './../../providers/authentication';
@@ -78,7 +77,7 @@ export class ProfilePage {
           }
         } else {
           this.Storage.get('currentUserData').then(currentUserData => {
-            this.currentUserId = JSON.parse(currentUserData).id;
+            this.currentUserId = currentUserData.id;
             this.RelationshipProvider.isUser1FollowerOfUser2(this.currentUserId, this.user.id).subscribe(isCurrentUserRelationship => {
               this.isCurrentUserRelationship = isCurrentUserRelationship;
             })
@@ -89,7 +88,7 @@ export class ProfilePage {
   }
 
   public openGroupPage(groupId: string): void {
-    this.NavController.push(GroupDetailPage, groupId);
+    this.NavController.push('GroupDetailPage', groupId);
   }
 
   public addUserToRelationships(userId: string): Promise<void> {

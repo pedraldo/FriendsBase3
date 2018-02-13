@@ -29,6 +29,11 @@ interface IGroupMainInfo {
     }
 }
 
+interface IEditableGroupInfo {
+    name?: string;
+    description?: string
+}
+
 interface IPersistedGroup extends IGroup, IPersistedResource { }
 
 // User

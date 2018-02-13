@@ -1,8 +1,9 @@
 import { AuthenticationProvider } from './../../../providers/authentication';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
-import { NavParams } from 'ionic-angular';
+import { NavParams, IonicPage } from 'ionic-angular';
 
+@IonicPage()
 @Component({
   selector: 'page-group-invitation',
   templateUrl: 'group-invitation.html',

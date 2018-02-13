@@ -1,11 +1,9 @@
 import { IonicPage } from 'ionic-angular';
 
-import { GroupCreationModalPage } from './../group-creation-modal/group-creation-modal';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
 import { Loading, LoadingController, ModalController, NavController } from 'ionic-angular';
 import { Storage } from '@ionic/storage';
-import { GroupDetailPage } from '../group-detail/group-detail';
 
 @IonicPage()
 @Component({
@@ -29,7 +27,7 @@ export class GroupsTabPage {
     });
     this.loader.present();
     this.Storage.get('currentUserData').then(currentUserData => {
-      this.currentUserId = JSON.parse(currentUserData).id;
+      this.currentUserId = currentUserData.id;
       this.GroupProvider.getUserGroups(this.currentUserId).subscribe(currentUserGroups => {
         this.groups = currentUserGroups;
         this.loader.dismiss();
@@ -42,12 +40,12 @@ export class GroupsTabPage {
   }
 
   public openNewGroupModal(): void {
-    let modal = this.ModalController.create(GroupCreationModalPage);
+    let modal = this.ModalController.create('GroupCreationModalPage');
     modal.present();
   }
 
   public openGroupDetailPage(groupId: string): void {
-    this.NavController.push(GroupDetailPage, groupId);
+    this.NavController.push('GroupDetailPage', groupId);
   }
 
   public openGroupSearchPage(): void {

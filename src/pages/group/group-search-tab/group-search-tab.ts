@@ -1,4 +1,3 @@
-import { GroupDetailPage } from './../group-detail/group-detail';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
 import { NavController, NavParams, IonicPage } from 'ionic-angular';
@@ -41,6 +40,6 @@ export class GroupSearchTabPage {
   }
 
   public openGroupPage(groupId: string): void {
-    this.NavController.push(GroupDetailPage, groupId);
+    this.NavController.push('GroupDetailPage', groupId);
   }
 }

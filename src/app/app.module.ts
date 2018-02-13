@@ -18,17 +18,15 @@ import { AuthHomePage } from './../pages/authentication/auth-home/auth-home';
 import { SignUpPage } from './../pages/authentication/sign-up/sign-up';
 import { LoginEmailPage } from './../pages/authentication/login-email/login-email';
 import { ForgotPasswordPage } from '../pages/authentication/forgot-password/forgot-password';
-// import { GroupListPage } from './../pages/group/group-list/group-list';
-import { GroupCreationModalPage } from './../pages/group/group-creation-modal/group-creation-modal';
-import { GroupDetailPage } from './../pages/group/group-detail/group-detail';
-import { GroupChangeAdminModalPage } from './../pages/group/group-change-admin-modal/group-change-admin-modal';
-import { GroupInvitationPage } from '../pages/group/group-invitation/group-invitation';
 import { ProfilePage } from './../pages/profile/profile';
 import { FollowersTabPage } from './../pages/relationship/followers-tab/followers-tab';
 import { FollowedTabPage } from './../pages/relationship/followed-tab/followed-tab';
 import { SearchPeopleTabPage } from './../pages/relationship/search-people-tab/search-people-tab';
 
-
+import { GroupChangeAdminModalPageModule } from './../pages/group/group-change-admin-modal/group-change-admin-modal.module';
+import { GroupEditPageModule } from './../pages/group/group-edit/group-edit.module';
+import { GroupDetailPageModule } from './../pages/group/group-detail/group-detail.module';
+import { GroupInvitationPageModule } from './../pages/group/group-invitation/group-invitation.module';
 import { GroupTabsPageModule } from '../pages/group/group-tabs/group-tabs.module';
 
 // Providers
@@ -40,6 +38,7 @@ import { RelationshipProvider } from './../providers/relationship';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { Facebook } from '@ionic-native/facebook';
+import { GroupCreationModalPageModule } from '../pages/group/group-creation-modal/group-creation-modal.module';
 
 // AngularFire2 Settings
 export const firebaseConfig = {
@@ -58,10 +57,6 @@ export const firebaseConfig = {
     SignUpPage,
     LoginEmailPage,
     ForgotPasswordPage,
-    GroupCreationModalPage,
-    GroupDetailPage,
-    GroupChangeAdminModalPage,
-    GroupInvitationPage,
     ProfilePage,
     FollowedTabPage,
     FollowersTabPage,
@@ -75,7 +70,12 @@ export const firebaseConfig = {
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
-    GroupTabsPageModule
+    GroupTabsPageModule,
+    GroupInvitationPageModule,
+    GroupDetailPageModule,
+    GroupCreationModalPageModule,
+    GroupEditPageModule,
+    GroupChangeAdminModalPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -86,10 +86,6 @@ export const firebaseConfig = {
     SignUpPage,
     LoginEmailPage,
     ForgotPasswordPage,
-    GroupCreationModalPage,
-    GroupDetailPage,
-    GroupChangeAdminModalPage,
-    GroupInvitationPage,
     ProfilePage,
     RelationshipTabsPage,
     FollowedTabPage,

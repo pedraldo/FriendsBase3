@@ -1,8 +1,9 @@
 import { Storage } from '@ionic/storage';
 import { GroupProvider } from './../../../providers/group';
 import { Component } from '@angular/core';
-import { NavParams, AlertController, ViewController, Platform } from 'ionic-angular';
+import { NavParams, AlertController, ViewController, Platform, IonicPage } from 'ionic-angular';
 
+@IonicPage()
 @Component({
   selector: 'page-group-change-admin-modal',
   templateUrl: 'group-change-admin-modal.html',
@@ -29,7 +30,7 @@ export class GroupChangeAdminModalPage {
 
   ngOnInit(): void {
     this.Storage.get('currentUserData').then(currentUserData => {
-      this.groupUsers = this.NavParams.data.groupUsers.filter(user => user.id !== JSON.parse(currentUserData).id);
+      this.groupUsers = this.NavParams.data.groupUsers.filter(user => user.id !== currentUserData.id);
     });
   }
 

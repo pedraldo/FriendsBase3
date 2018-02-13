@@ -82,11 +82,11 @@ export class MyApp {
   // }
 
   public openProfilePage(): void {
-    this.Storage.get('currentUserData').then(currentUserData => this.nav.setRoot(ProfilePage, [JSON.parse(currentUserData).id, true]));
+    this.Storage.get('currentUserData').then(currentUserData => this.nav.setRoot(ProfilePage, [currentUserData.id, true]));
   }
 
   public openRelationshipsPage(): void {
-    this.Storage.get('currentUserData').then(currentUserData => this.nav.setRoot(RelationshipTabsPage, [JSON.parse(currentUserData).id, true]));
+    this.Storage.get('currentUserData').then(currentUserData => this.nav.setRoot(RelationshipTabsPage, [currentUserData.id, true]));
   }
 
   public logout(): void {
